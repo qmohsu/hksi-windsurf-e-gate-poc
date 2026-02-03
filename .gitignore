@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Visual Studio
+*.suo
+*.sdf
+*.ipch
+*.pdb
+*.idb
+*.ilk
+*.log
+*.tlog
+*.lastbuildstate
+*.unsuccessfulbuild
+*.vcxprojResolveAssemblyReference.cache
+ipch/
+Debug/
+Release/
+x64/
+*.exp
+*.lib
+*.obj
+*.res
+*.manifest
+*.embed.manifest
+*.intermediate.manifest
+*.command.*.tlog
+*.read.*.tlog
+*.write.*.tlog

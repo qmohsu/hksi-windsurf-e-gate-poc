@@ -1,0 +1,51 @@
+// position.proto
+// Protocol Buffers v3 definition for multi-sensor position streaming
+// Supports UWB/IMU/GNSS fusion, outputs in WGS84 LLH coordinate system
+// Compatible with: Python, Go, Swift, JavaScript
+
+syntax = "proto3";
+
+package uwb_position;
+
+option go_package = "github.com/yourorg/uwb-position/pb";
+option swift_prefix = "UWB";
+
+// Single device position data in WGS84 (LLH) frame
+message Position {
+  // Device identifier. Range: 1 to 255. Must be unique per device.
+  uint32 device_id = 1;
+
+  // WGS84 coordinates (standard for GNSS integration)
+  // - latitude: degrees [-90.0, 90.0]
+  // - longitude: degrees [-180.0, 180.0]
+  // - altitude: meters above WGS84 ellipsoid (not MSL)
+  double latitude = 2;
+  double longitude = 3;
+  double altitude = 4;
+
+  // Sensor source bitmask (3-bit compact encoding)
+  // Bit 0 (LSB): 1 = UWB used
+  // Bit 1:       1 = IMU used
+  // Bit 2:       1 = GNSS used
+  // Example: 
+  //   0b001 (1) -> UWB-only
+  //   0b011 (3) -> UWB + IMU
+  //   0b101 (5) -> UWB + GNSS
+  //   0b111 (7) -> UWB + IMU + GNSS (sensor fusion)
+  // Reserves bits 3-31 for future sensors (e.g., VIO, Lidar)
+  fixed32 source_mask = 5;
+
+  // Device-local generation timestamp (microseconds since Unix epoch)
+  // Critical for temporal alignment of multi-sensor data
+  uint64 device_timestamp = 6;
+}
+
+// Batch of latest positions for all active devices
+message PositionBatch {
+  // Server-side timestamp when batch was finalized (μs)
+  uint64 server_timestamp = 1;
+
+  // List of latest positions, sorted by device_id ascending
+  // Only devices with updates since last batch are included
+  repeated Position positions = 2;
+}
