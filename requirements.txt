@@ -2,3 +2,7 @@
 # 基础依赖，无需额外安装（使用Python标准库）
 # 如需使用protobuf格式，可安装：
 # protobuf>=4.0.0
+
+# Testing dependencies
+pytest>=7.0.0
+pytest-cov>=4.0.0
