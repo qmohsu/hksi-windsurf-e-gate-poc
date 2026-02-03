@@ -1,0 +1,34 @@
+---
+description: "UWB localization: frames, time, estimators, outliers"
+globs: ["**/*uwb*", "**/*localiz*", "**/*trilat*", "**/*ekf*", "**/*ukf*", "**/*particle*", "**/*filter*"]
+alwaysApply: false
+---
+
+Non-negotiable definitions (must exist in code + docs):
+1) UWB measurement type: TWR vs TDoA vs AoA (and what device provides what).
+2) Timestamp semantics:
+   - tx_time (device), rx_time (host), and state_time (estimator) must be distinguished.
+   - Late/out-of-order packets must be handled deterministically.
+3) Coordinate frames:
+   - Define a world frame (recommended: local ENU), anchor frame, tag/body frame.
+   - Every transform must be unit-tested with known points.
+
+Estimator expectations:
+- Trilateration is only an initializer or fallback.
+- Primary estimator must be one of:
+  - EKF/UKF with robust gating, or
+  - Particle filter with resampling rules, or
+  - Sliding-window least squares / factor graph.
+- Must include outlier rejection (NLOS/multipath):
+  - residual gating + robust loss (Huber/Cauchy/etc.) or equivalent.
+- Must surface quality metrics: residual stats, number of inliers, dilution of precision / geometry score.
+
+Anchor motion:
+- If anchors can drift (buoys), define a strategy:
+  - static anchors with periodic recalibration, or
+  - drift model (slow random walk) with constraints (GNSS priors, anchor-to-anchor baselines).
+- Never silently "move anchors" without logging and exposing confidence.
+
+Start-line crossing logic:
+- Crossing time must be interpolated between samples, not snapped to sample time.
+- Must include hysteresis/debounce to avoid jitter near the line.

@@ -1,0 +1,19 @@
+---
+description: "C++ rules: Google C++ style + embedded constraints"
+globs: ["**/*.{h,hpp,hh,cc,cpp,cxx}"]
+alwaysApply: false
+---
+
+Follow Google C++ Style Guide:
+- Clear naming, include order, header guards, avoid macros except constants.
+- Prefer RAII, smart pointers, and explicit ownership.
+- Avoid exceptions for normal control flow; return Status/StatusOr style if used in codebase.
+
+Performance and safety:
+- Avoid heap churn in hot loops (ranging/estimation paths).
+- Bounds-check all buffers. Never trust network payload sizes.
+- Do not use undefined behavior tricks; keep code portable to ARM64.
+
+Interfacing:
+- Keep serialization/deserialization code centralized.
+- Always include units in variable names or comments (meters, seconds, ns).

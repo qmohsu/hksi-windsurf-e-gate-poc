@@ -1,0 +1,17 @@
+---
+description: "Security + privacy baseline"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+Security baseline:
+- No credentials or keys in repo. No hard-coded tokens.
+- All endpoints/IPs/ports come from config/env.
+- Don't open unauthenticated admin/debug endpoints on public interfaces.
+
+Privacy:
+- GNSS locations can be sensitive. If stored or transmitted, document:
+  - what is stored
+  - retention period
+  - who can access it
+- Avoid logging raw location unless necessary for debugging; prefer hashed session ids and summarized metrics.

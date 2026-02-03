@@ -1,0 +1,19 @@
+---
+description: "Docker, reproducibility, and CI expectations"
+globs: ["Dockerfile*", "docker-compose*.yml", ".github/workflows/**", "**/*.sh"]
+alwaysApply: false
+---
+
+Docker rules:
+- Images must build deterministically (pin base image tags and key dependencies).
+- Use multi-stage builds where helpful. Keep runtime image minimal.
+- Do not run as root unless unavoidable; document why if you must.
+- Provide a single command to run: sim/replay, unit tests, and a minimal end-to-end pipeline.
+
+Raspberry Pi compatibility:
+- Ensure ARM64 builds are supported (or clearly documented if not).
+- Avoid dependency choices that break on ARM.
+
+CI expectations:
+- Lint + unit tests must run in CI.
+- Add a replay test that consumes a short recorded log and asserts stable outputs.

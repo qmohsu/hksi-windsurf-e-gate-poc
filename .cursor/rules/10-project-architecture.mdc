@@ -1,0 +1,21 @@
+---
+description: "Project architecture and module boundaries"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+Architecture expectations:
+- Separate concerns:
+  - io/: serial, UDP/TCP, parsing, buffering
+  - proto/: message definitions + schema versioning
+  - localization/: estimation (EKF/UKF/PF), coordinate transforms, outlier rejection
+  - domain/: start-line crossing, race logic, metrics
+  - tools/: replay, sim data generation, log bundle utilities
+  - services/: systemd units, Docker entrypoints
+
+Interfaces must be explicit:
+- Every network message includes: schema_version, source_id, seq, tx_timestamp, rx_timestamp, and units.
+- Avoid "magic" global singletons. Pass dependencies explicitly.
+
+Field diagnostics:
+- Every module must export counters: packets_in, packets_dropped_by_reason, parse_errors, outlier_rejections, solver_failures, latency_histograms.

@@ -1,0 +1,19 @@
+---
+description: "Metrics, logging, and diagnosability"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+Logging rules:
+- Use structured logs or consistent key=value logs.
+- Every dropped measurement must log a reason code (e.g., parse_error, stale, out_of_order, outlier, queue_full).
+- Always log configuration at startup (sanitized).
+
+Metrics rules:
+- Provide counters + histograms for:
+  - end-to-end latency (rx -> output)
+  - packet loss / drop reasons
+  - estimator update rate
+  - residuals/inlier ratio
+  - CPU and memory (best-effort on RPi)
+- A "log bundle" command should collect: config, version info, last N minutes of logs, and a short sample of raw messages.

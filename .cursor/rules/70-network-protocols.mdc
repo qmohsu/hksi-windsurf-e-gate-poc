@@ -1,0 +1,19 @@
+---
+description: "Networking and message schema rules"
+globs: ["**/*udp*", "**/*tcp*", "**/*socket*", "**/*.proto", "**/*protobuf*", "**/*schema*"]
+alwaysApply: false
+---
+
+Network messaging rules:
+- Every message must include:
+  - schema_version
+  - source_id (anchor/tag id)
+  - seq number
+  - monotonic_time_ns (receiver) and device_time (if available)
+  - units and frame id
+- Parsers must be defensive: size checks, timeouts, partial frames, invalid UTF-8 for JSON, etc.
+- Avoid "implicit defaults" (like default port numbers) in code; keep in config.
+
+If using protobuf:
+- Keep messages backward compatible. Never reuse field numbers.
+- Include a top-level Envelope with schema_version and message_type.

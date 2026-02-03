@@ -1,0 +1,32 @@
+---
+description: "HKSI UWB core standards"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+You are working on the HKSI-Windsurfing UWB positioning system (anchors + tag) for windsurf start-line monitoring.
+
+Non-negotiables:
+- Correctness > cleverness. If assumptions are missing (time base, coordinate frames, UWB protocol, anchor motion), stop and define them in code + docs.
+- Treat open-water conditions as hostile: packet loss, delayed/out-of-order messages, multipath/NLOS ranges, anchor drift, clock drift.
+- No silent failures. Every dropped measurement must be counted and logged with a reason code.
+- Keep interfaces explicit and versioned (network payloads, .proto, JSON schemas). Backward compatibility matters.
+
+Engineering standards:
+- Follow Google Python Style Guide for Python and Google C++ Style Guide for C++.
+- Prefer simple, testable modules over monolith scripts.
+- Every algorithm module must ship with: synthetic tests + replay harness support + metrics.
+- Must run on Raspberry Pi (ARM64) with bounded CPU/RAM and safe reconnection behavior (serial + network).
+
+Localization principles:
+- Always specify frames: world/ENU, anchor frame, tag frame. Every transform must be unit-tested.
+- Always specify time semantics: measurement time vs receive time vs state time. Use monotonic clocks for ordering; handle late packets deterministically.
+- Trilateration alone is not a production estimator. Use robust filtering/smoothing (EKF/UKF/Particle Filter/sliding window) with outlier rejection.
+
+Deliverables mindset:
+- Build toward measurable KPIs: latency, uptime, packet loss tolerance, timestamp error, repeatability, setup time.
+- Add metrics + logs that make field failures diagnosable from a single log bundle.
+
+Security & ops:
+- No hard-coded IPs, ports, credentials. All via config/env.
+- Don't log secrets. Don't store raw GNSS positions unless required; if stored, document retention.

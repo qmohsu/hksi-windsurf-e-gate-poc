@@ -1,0 +1,24 @@
+---
+description: "Python rules: Google style + reliability"
+globs: ["**/*.py"]
+alwaysApply: false
+---
+
+Follow Google Python Style Guide conventions:
+- Use Google-style docstrings for all public modules/classes/functions.
+- Prefer explicit, readable code over condensed one-liners.
+- Type hints are required for public function signatures.
+- No wildcard imports. Avoid dynamic typing where it obscures units or frames.
+
+Reliability rules:
+- No print() for runtime behavior; use logging with levels.
+- Fail fast on invalid configuration. Validate IP/port/serial paths on startup.
+- Handle reconnect loops (serial/network) with backoff and clear logs.
+
+Testing:
+- Use pytest for unit tests.
+- Localization math must have deterministic tests (seeded RNG).
+- Add replay tests for message parsing and ordering logic.
+
+Formatting:
+- Keep lines reasonably short and readable. Wrap long expressions.

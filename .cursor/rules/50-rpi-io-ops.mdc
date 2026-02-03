@@ -1,0 +1,18 @@
+---
+description: "Raspberry Pi IO + ops hardening"
+globs: ["**/*rpi*", "**/*.service", "**/systemd/**", "**/scripts/**", "**/*serial*"]
+alwaysApply: false
+---
+
+Raspberry Pi rules:
+- Serial ports must be configurable and support /dev/serial/by-id paths.
+- IO must tolerate disconnect/reconnect without crashing.
+- Use bounded queues and backpressure; never allow unbounded RAM growth on packet bursts.
+- If forwarding to server: handle server downtime with retry/backoff and local buffering limits.
+
+Deployment:
+- Provide a systemd service file with:
+  - Restart=always
+  - RestartSec backoff
+  - StandardOutput/StandardError logging
+- Provide a "health" endpoint or periodic heartbeat log line.
