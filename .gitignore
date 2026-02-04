@@ -7,46 +7,39 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Virtual Environment
+# Virtual environments
 venv/
 env/
 ENV/
 
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
+# Native libraries (built artifacts)
+lib/libtrilateration*.so
+lib/*.so
+*.dll
+!uwbdemo/trilateration.dll  # Keep original Windows DLL
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Visual Studio
-*.suo
-*.sdf
-*.ipch
-*.pdb
-*.idb
-*.ilk
+# Logs
 *.log
-*.tlog
-*.lastbuildstate
-*.unsuccessfulbuild
-*.vcxprojResolveAssemblyReference.cache
-ipch/
-Debug/
-Release/
-x64/
-*.exp
-*.lib
-*.obj
-*.res
-*.manifest
-*.embed.manifest
-*.intermediate.manifest
-*.command.*.tlog
-*.read.*.tlog
-*.write.*.tlog
+
+# Config (may contain sensitive data)
+*.env
+.env.*
+config.local.yaml
+
+# Test artifacts
+tests/baselines/*.json.tmp

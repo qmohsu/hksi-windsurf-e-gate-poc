@@ -1,7 +1,10 @@
 # UWB定位服务器依赖
-# 基础依赖，无需额外安装（使用Python标准库）
-# 如需使用protobuf格式，可安装：
-# protobuf>=4.0.0
+
+# Core dependencies
+numpy>=1.24.0  # Kalman filter matrix operations
+
+# Optional dependencies
+# protobuf>=4.0.0  # If using protobuf format for messages
 
 # Testing dependencies
 pytest>=7.0.0

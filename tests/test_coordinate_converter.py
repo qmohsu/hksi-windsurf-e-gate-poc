@@ -17,7 +17,7 @@ from typing import Dict
 
 import pytest
 
-from coordinate_converter import (
+from bah_core.localization import (
     CoordinateConverter,
     GNSSCoordinate,
     PlaneCoordinate,

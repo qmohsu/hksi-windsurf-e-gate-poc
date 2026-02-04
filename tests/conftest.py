@@ -96,7 +96,8 @@ def pytest_collection_modifyitems(config: Any, items: List[Any]) -> None:
             if "slow" in item.keywords:
                 item.add_marker(skip_slow)
 
-from coordinate_converter import (
+# Use new package imports (Phase 1)
+from bah_core.localization import (
     CoordinateConverter,
     GNSSCoordinate,
     PlaneCoordinate,

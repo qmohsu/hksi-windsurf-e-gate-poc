@@ -1,10 +1,12 @@
 """
 三边定位算法包装模块
-调用trilateration.dll进行UWB定位计算
+调用trilateration native library进行UWB定位计算
+支持跨平台：Windows (.dll), Linux (.so)
 """
 
 import os
 import ctypes
+import platform
 import logging
 from typing import Optional, Tuple, List
 from dataclasses import dataclass
@@ -30,19 +32,21 @@ class UWBMsg(ctypes.Structure):
 
 
 class TrilaterationWrapper:
-    """三边定位DLL包装类"""
+    """三边定位Native Library包装类（跨平台）"""
     
     MAX_ANCHORS = 8
     
-    def __init__(self, dll_path: str = None):
+    def __init__(self, library_path: str = None):
         """
         初始化三边定位包装器
         
         Args:
-            dll_path: trilateration.dll的路径
+            library_path: Native library路径（可选，自动检测平台）
         """
-        self.dll = None
-        self.dll_path = dll_path
+        self.library = None
+        self.dll = None  # Backward compatibility
+        self.library_path = library_path
+        self.platform_info = self._detect_platform()
         
         # 初始化anchor和距离数组
         self.anchor_array = (UWBMsg * self.MAX_ANCHORS)()
@@ -53,33 +57,111 @@ class TrilaterationWrapper:
         for i in range(self.MAX_ANCHORS):
             self.distance_array[i] = -1
     
-    def load_dll(self, dll_path: str = None) -> bool:
+    def _detect_platform(self) -> dict:
         """
-        加载trilateration.dll
+        检测当前平台信息
+        
+        Returns:
+            包含平台信息的字典
+        """
+        system = platform.system()
+        machine = platform.machine().lower()
+        
+        # Normalize architecture names
+        if machine in ('x86_64', 'amd64', 'x64'):
+            arch = 'x86_64'
+        elif machine in ('aarch64', 'arm64'):
+            arch = 'arm64'
+        elif machine in ('armv7l', 'armv7'):
+            arch = 'armv7'
+        else:
+            arch = machine
+        
+        info = {
+            'system': system,
+            'machine': machine,
+            'arch': arch,
+            'is_windows': system == 'Windows',
+            'is_linux': system == 'Linux',
+            'is_macos': system == 'Darwin',
+            'is_rpi': system == 'Linux' and 'arm' in arch,
+        }
+        
+        logger.info(f"Platform detected: {system} {arch} (machine: {machine})")
+        return info
+    
+    def _get_default_library_path(self) -> Optional[str]:
+        """
+        根据平台获取默认library路径
+        
+        Returns:
+            默认library路径，如果平台不支持返回None
+        """
+        cur_path = os.path.dirname(os.path.abspath(__file__))
+        
+        if self.platform_info['is_windows']:
+            # Windows: 使用现有的DLL
+            return os.path.join(cur_path, "uwbdemo", "trilateration.dll")
+        
+        elif self.platform_info['is_linux']:
+            # Linux: 优先使用架构特定的.so，回退到通用.so
+            arch = self.platform_info['arch']
+            lib_dir = os.path.join(cur_path, "lib")
+            
+            # 尝试架构特定版本
+            arch_specific = os.path.join(lib_dir, f"libtrilateration_{arch}.so")
+            if os.path.exists(arch_specific):
+                return arch_specific
+            
+            # 回退到通用版本（可能是符号链接）
+            generic = os.path.join(lib_dir, "libtrilateration.so")
+            if os.path.exists(generic):
+                return generic
+            
+            logger.warning(f"No .so found in {lib_dir} for arch {arch}")
+            return None
+        
+        else:
+            logger.warning(f"Platform {self.platform_info['system']} not explicitly supported")
+            return None
+    
+    def load_dll(self, library_path: str = None) -> bool:
+        """
+        加载trilateration native library（跨平台）
         
         Args:
-            dll_path: DLL文件路径
+            library_path: Library文件路径（可选）
             
         Returns:
             加载是否成功
         """
         try:
-            path = dll_path or self.dll_path
-            if path is None:
-                # 默认路径
-                cur_path = os.path.dirname(os.path.abspath(__file__))
-                path = os.path.join(cur_path, "uwbdemo", "trilateration.dll")
+            path = library_path or self.library_path or self._get_default_library_path()
             
-            if not os.path.exists(path):
-                logger.error(f"DLL文件不存在: {path}")
+            if path is None:
+                logger.error("无法确定native library路径")
                 return False
             
-            self.dll = ctypes.cdll.LoadLibrary(path)
-            logger.info(f"成功加载DLL: {path}")
+            if not os.path.exists(path):
+                logger.error(f"Native library不存在: {path}")
+                logger.info(f"当前平台: {self.platform_info['system']} {self.platform_info['arch']}")
+                if self.platform_info['is_linux']:
+                    logger.info("提示: 运行 ./scripts/build_trilateration.sh 编译library")
+                return False
+            
+            # 加载library
+            self.library = ctypes.cdll.LoadLibrary(path)
+            self.dll = self.library  # 保持向后兼容
+            
+            logger.info(f"成功加载native library: {path}")
+            logger.info(f"平台: {self.platform_info['system']} {self.platform_info['arch']}")
             return True
             
         except OSError as e:
-            logger.error(f"加载DLL失败: {e}")
+            logger.error(f"加载native library失败: {e}")
+            logger.error(f"路径: {path}")
+            if self.platform_info['is_linux'] and 'arm' in self.platform_info['arch']:
+                logger.error("RPi提示: 确保使用 'arm64' 参数编译了library")
             return False
     
     def set_anchor_position(self, index: int, x: float, y: float, z: float):
@@ -147,13 +229,15 @@ class TrilaterationWrapper:
         Returns:
             Tag位置(Vec3D)，计算失败返回None
         """
-        if self.dll is None:
-            logger.error("DLL未加载")
+        if self.library is None and self.dll is None:
+            logger.error("Native library未加载")
             return None
+        
+        lib = self.library or self.dll  # 向后兼容
         
         try:
             # 调用GetLocation函数
-            result = self.dll.GetLocation(
+            result = lib.GetLocation(
                 ctypes.byref(self.location),
                 self.anchor_array,
                 self.distance_array
@@ -301,17 +385,18 @@ class PythonTrilateration:
         return (x, y, z)
 
 
-def create_trilateration_wrapper(dll_path: str = None) -> TrilaterationWrapper:
+def create_trilateration_wrapper(library_path: str = None) -> TrilaterationWrapper:
     """
     创建三边定位包装器实例
     
     Args:
-        dll_path: DLL路径
+        library_path: Native library路径（可选，自动检测）
         
     Returns:
         TrilaterationWrapper实例
     """
-    wrapper = TrilaterationWrapper(dll_path)
+    wrapper = TrilaterationWrapper(library_path)
     if not wrapper.load_dll():
-        logger.warning("无法加载DLL，将使用Python备用算法")
+        logger.warning("无法加载native library，将使用Python备用算法")
+        logger.info(f"平台: {wrapper.platform_info['system']} {wrapper.platform_info['arch']}")
     return wrapper

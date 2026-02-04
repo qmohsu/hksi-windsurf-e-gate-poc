@@ -10,9 +10,6 @@ Tests cover:
 - Anchor weight calculation based on GNSS quality
 
 Reference: Design Doc Section 6 (Anchor State Model)
-
-NOTE: These tests are written BEFORE the AnchorTracker implementation.
-      They define the expected behavior and will fail until implemented.
 """
 
 import time
@@ -21,25 +18,14 @@ import pytest
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 
+# Use real implementation (Phase 1)
+from bah_core.localization import AnchorTracker, AnchorState, AnchorStateTable
+from bah_core.localization import GNSSQuality, GNSSFixType
+
 
 # =============================================================================
-# Placeholder Classes (To be replaced with actual imports)
+# Stub for backward compatibility with old tests
 # =============================================================================
-
-
-@dataclass
-class AnchorState:
-    """Expected anchor state structure."""
-
-    anchor_id: str
-    pos_enu_filtered: Tuple[float, float, float]  # Filtered ENU position
-    pos_enu_pred: Tuple[float, float, float]      # Predicted ENU position
-    covariance: Tuple[float, float, float]        # Position uncertainty (E, N, U)
-    last_fix_age_s: float                         # Seconds since last GNSS fix
-    gnss_quality: Dict[str, float]                # HDOP, fix_type, etc.
-    weight: float                                 # Weight for multilateration (0-1)
-    is_valid: bool                                # Whether anchor can be used
-
 
 class AnchorTrackerStub:
     """

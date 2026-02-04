@@ -1,621 +1,504 @@
 """
-Unit tests for Gate Metrics module (Milestone P1-D).
+Unit tests for Gate Metrics (P1-E).
 
 Tests cover:
-- Moving start line computation from anchor endpoints
-- Signed perpendicular distance (d_perp_signed)
-- Along-line progress (s_along)
-- Crossing detection and time estimation
-- Crossing confidence calculation
+- GateMetrics message schema
+- Gate geometry calculation
+- Perpendicular distance computation
+- Crossing detection
+- Confidence scoring
+- Acceptance criteria verification
 
-Reference: Design Doc Section 7.5 (Gate Metrics)
-
-NOTE: These tests are written BEFORE the GateMetrics implementation.
-      They define the expected behavior and will fail until implemented.
+Reference: Design Doc Section 8, dev_plan.md P1-E
 """
 
-import math
 import pytest
-from typing import Tuple, Optional
-from dataclasses import dataclass
+import numpy as np
+import time
+
+from bah_core.proto import (
+    GateMetrics,
+    CrossingEvent,
+    create_no_gate_metrics,
+    PositionEstimate,
+    FixType,
+)
+from bah_core.domain import (
+    GateCalculator,
+    GateConfig,
+    create_default_gate_calculator,
+)
+from bah_core.localization import (
+    AnchorTracker,
+    GNSSQuality,
+    GNSSFixType,
+)
 
 
 # =============================================================================
-# Placeholder Classes (To be replaced with actual imports)
+# Test GateMetrics Message Schema
 # =============================================================================
 
 
-@dataclass
-class GateConfig:
-    """Configuration for gate endpoints."""
-
-    left_anchor_id: str
-    right_anchor_id: str
-    positive_direction: str = "north"  # Which side is "post-start"
-
-
-@dataclass
-class GateMetrics:
-    """Gate metrics output structure."""
-
-    tag_id: str
-    t_bah: float                    # Solve time
-    gate_left_pos: Tuple[float, float, float]   # Left endpoint position
-    gate_right_pos: Tuple[float, float, float]  # Right endpoint position
-    d_perp_signed: float            # Signed perpendicular distance to line
-    s_along: float                  # Along-line progress (0-1)
-    crossing_detected: bool
-    crossing_time_est: Optional[float]
-    crossing_confidence: float
-
-
-class GateMetricsCalculatorStub:
-    """
-    Stub implementation for gate metrics calculation.
-
-    Replace with actual implementation when available.
-    """
-
-    def __init__(self, config: GateConfig):
-        """
-        Initialize gate metrics calculator.
-
-        Args:
-            config: Gate configuration with endpoint anchor IDs.
-        """
-        self.config = config
-        self._prev_d_perp: Optional[float] = None
-        self._prev_time: Optional[float] = None
-
-    def calculate(
-        self,
-        tag_id: str,
-        tag_pos: Tuple[float, float, float],
-        t_bah: float,
-        left_pos: Tuple[float, float, float],
-        right_pos: Tuple[float, float, float],
-        position_uncertainty: float = 0.5,
-    ) -> GateMetrics:
-        """
-        Calculate gate metrics for a tag position.
-
-        Args:
-            tag_id: Tag identifier.
-            tag_pos: Tag position (E, N, U) meters.
-            t_bah: BAH solve time.
-            left_pos: Left endpoint position.
-            right_pos: Right endpoint position.
-            position_uncertainty: Tag position uncertainty (meters).
-
-        Returns:
-            GateMetrics object.
-        """
-        # Calculate line vector (left to right)
-        line_vec = (
-            right_pos[0] - left_pos[0],
-            right_pos[1] - left_pos[1],
+class TestGateMetricsSchema:
+    """Tests for GateMetrics message schema."""
+    
+    def test_create_gate_metrics(self):
+        """Test creating gate metrics."""
+        metrics = GateMetrics(
+            tag_id="T1",
+            t_solve=time.time(),
+            gate_anchor_left_id="A0",
+            gate_anchor_right_id="A1",
+            d_perp_signed=-2.5,
+            s_along=0.3,
+            crossing_event=CrossingEvent.NO_CROSSING,
+            crossing_confidence=0.0,
         )
-        line_length = math.sqrt(line_vec[0] ** 2 + line_vec[1] ** 2)
-
-        if line_length < 0.001:
-            # Degenerate line
-            return GateMetrics(
-                tag_id=tag_id,
-                t_bah=t_bah,
-                gate_left_pos=left_pos,
-                gate_right_pos=right_pos,
-                d_perp_signed=float("inf"),
-                s_along=0.5,
-                crossing_detected=False,
-                crossing_time_est=None,
-                crossing_confidence=0.0,
-            )
-
-        # Normalize line vector
-        line_unit = (line_vec[0] / line_length, line_vec[1] / line_length)
-
-        # Vector from left endpoint to tag
-        tag_vec = (
-            tag_pos[0] - left_pos[0],
-            tag_pos[1] - left_pos[1],
+        
+        assert metrics.tag_id == "T1"
+        assert metrics.d_perp_signed == -2.5
+        assert metrics.is_left_of_line
+        assert not metrics.is_right_of_line
+    
+    def test_properties(self):
+        """Test gate metrics properties."""
+        # Left of line
+        metrics_left = GateMetrics(
+            "T1", time.time(), "A0", "A1", -5.0, 0.5
         )
+        assert metrics_left.is_left_of_line
+        assert not metrics_left.is_right_of_line
+        
+        # Right of line
+        metrics_right = GateMetrics(
+            "T1", time.time(), "A0", "A1", 5.0, 0.5
+        )
+        assert metrics_right.is_right_of_line
+        assert not metrics_right.is_left_of_line
+        
+        # On line
+        metrics_on = GateMetrics(
+            "T1", time.time(), "A0", "A1", 0.05, 0.5
+        )
+        assert metrics_on.is_on_line
+        
+        # Within bounds
+        metrics_within = GateMetrics(
+            "T1", time.time(), "A0", "A1", 0.0, 0.5
+        )
+        assert metrics_within.is_within_gate_bounds
+        
+        # Outside bounds
+        metrics_outside = GateMetrics(
+            "T1", time.time(), "A0", "A1", 0.0, 1.5
+        )
+        assert not metrics_outside.is_within_gate_bounds
+    
+    def test_crossing_detection(self):
+        """Test crossing event detection."""
+        metrics_no = GateMetrics(
+            "T1", time.time(), "A0", "A1", 0.0, 0.5,
+            crossing_event=CrossingEvent.NO_CROSSING
+        )
+        assert not metrics_no.has_crossing
+        
+        metrics_left = GateMetrics(
+            "T1", time.time(), "A0", "A1", 1.0, 0.5,
+            crossing_event=CrossingEvent.CROSSING_LEFT
+        )
+        assert metrics_left.has_crossing
+    
+    def test_to_dict(self):
+        """Test serialization to dict."""
+        metrics = GateMetrics(
+            "T1", 1234.5, "A0", "A1", -2.5, 0.3,
+            CrossingEvent.CROSSING_LEFT, 0.85
+        )
+        
+        d = metrics.to_dict()
+        
+        assert d['tag_id'] == "T1"
+        assert d['d_perp_signed'] == -2.5
+        assert d['crossing_event'] == 'CROSSING_LEFT'
+        assert d['crossing_confidence'] == 0.85
 
-        # Along-line progress (dot product)
-        s_along_raw = (tag_vec[0] * line_unit[0] + tag_vec[1] * line_unit[1]) / line_length
-        s_along = max(0.0, min(1.0, s_along_raw))
 
-        # Perpendicular distance (cross product magnitude)
-        # Positive if tag is "left" of line (north for E-W line)
-        d_perp_signed = tag_vec[0] * (-line_unit[1]) + tag_vec[1] * line_unit[0]
+# =============================================================================
+# Test Gate Geometry Calculation
+# =============================================================================
 
-        # Crossing detection
-        crossing_detected = False
-        crossing_time_est = None
 
-        if self._prev_d_perp is not None and self._prev_time is not None:
-            # Check for sign change
-            if self._prev_d_perp * d_perp_signed < 0:
-                crossing_detected = True
-                # Linear interpolation for crossing time
-                dt = t_bah - self._prev_time
-                if abs(d_perp_signed - self._prev_d_perp) > 0.001:
-                    ratio = abs(self._prev_d_perp) / abs(d_perp_signed - self._prev_d_perp)
-                    crossing_time_est = self._prev_time + ratio * dt
-
-        # Update previous values
-        self._prev_d_perp = d_perp_signed
-        self._prev_time = t_bah
-
-        # Confidence based on position uncertainty and distance
-        endpoint_uncertainty = 0.5  # Assume anchor uncertainty
-        combined_uncertainty = math.sqrt(position_uncertainty ** 2 + endpoint_uncertainty ** 2)
-        crossing_confidence = max(0.0, min(1.0, 1.0 - combined_uncertainty / 2.0))
-
-        return GateMetrics(
+class TestGateGeometry:
+    """Tests for gate geometry calculations."""
+    
+    def create_test_scenario(self):
+        """Create test scenario with anchors."""
+        # Create anchors at known positions
+        anchor_positions = {
+            "A0": (0.0, 0.0, 2.0),   # Left
+            "A1": (20.0, 0.0, 2.0),  # Right (gate along East axis)
+        }
+        
+        t_now = time.time()
+        quality = GNSSQuality(fix_type=GNSSFixType.GPS_FIX, hdop=1.0, num_satellites=10)
+        
+        trackers = {}
+        for aid, pos in anchor_positions.items():
+            tracker = AnchorTracker(aid)
+            tracker.update_gnss(t_now, pos, quality)
+            trackers[aid] = tracker
+        
+        anchor_states = {aid: t.predict(t_now) for aid, t in trackers.items()}
+        
+        return {
+            'anchor_states': anchor_states,
+            't_now': t_now,
+        }
+    
+    def create_position_estimate(self, tag_id, t_solve, pos):
+        """Create mock position estimate."""
+        return PositionEstimate(
             tag_id=tag_id,
-            t_bah=t_bah,
-            gate_left_pos=left_pos,
-            gate_right_pos=right_pos,
-            d_perp_signed=d_perp_signed,
-            s_along=s_along,
-            crossing_detected=crossing_detected,
-            crossing_time_est=crossing_time_est,
-            crossing_confidence=crossing_confidence,
+            t_solve=t_solve,
+            fix_type=FixType.FIX_2D,
+            pos_enu=pos,
+            quality_score=0.85,
+            num_anchors_used=3,
+            anchor_ids=["A0", "A1", "A2"],
+            residual_m=0.1,
         )
+    
+    def test_perpendicular_distance_on_line(self):
+        """Test perpendicular distance for tag on line."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        # Tag at midpoint of gate (10, 0)
+        pos_estimate = self.create_position_estimate(
+            "T1", scenario['t_now'], (10.0, 0.0, 0.0)
+        )
+        
+        metrics = calc.compute_metrics(pos_estimate, scenario['anchor_states'])
+        
+        # Should be on line (d_perp ≈ 0)
+        assert abs(metrics.d_perp_signed) < 0.01
+        assert 0.4 < metrics.s_along < 0.6  # Around midpoint
+    
+    def test_perpendicular_distance_left_of_line(self):
+        """Test perpendicular distance for tag left of line."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        # Tag at (10, -5) - 5m South of gate
+        pos_estimate = self.create_position_estimate(
+            "T1", scenario['t_now'], (10.0, -5.0, 0.0)
+        )
+        
+        metrics = calc.compute_metrics(pos_estimate, scenario['anchor_states'])
+        
+        # Should be left of line (negative, since line is along East)
+        assert metrics.d_perp_signed < -4.9
+        assert metrics.is_left_of_line
+    
+    def test_perpendicular_distance_right_of_line(self):
+        """Test perpendicular distance for tag right of line."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        # Tag at (10, 5) - 5m North of gate
+        pos_estimate = self.create_position_estimate(
+            "T1", scenario['t_now'], (10.0, 5.0, 0.0)
+        )
+        
+        metrics = calc.compute_metrics(pos_estimate, scenario['anchor_states'])
+        
+        # Should be right of line (positive)
+        assert metrics.d_perp_signed > 4.9
+        assert metrics.is_right_of_line
+    
+    def test_along_line_coordinate(self):
+        """Test along-line coordinate calculation."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        # Test points along line
+        test_cases = [
+            ((0.0, 0.0, 0.0), 0.0),    # At left anchor
+            ((5.0, 0.0, 0.0), 0.25),   # 1/4 way
+            ((10.0, 0.0, 0.0), 0.5),   # Midpoint
+            ((15.0, 0.0, 0.0), 0.75),  # 3/4 way
+            ((20.0, 0.0, 0.0), 1.0),   # At right anchor
+        ]
+        
+        for pos, expected_s in test_cases:
+            pos_estimate = self.create_position_estimate("T1", scenario['t_now'], pos)
+            metrics = calc.compute_metrics(pos_estimate, scenario['anchor_states'])
+            
+            assert abs(metrics.s_along - expected_s) < 0.01
+    
+    def test_outside_gate_bounds(self):
+        """Test s_along for positions outside gate segment."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        # Beyond left anchor
+        pos_left = self.create_position_estimate("T1", scenario['t_now'], (-5.0, 0.0, 0.0))
+        metrics_left = calc.compute_metrics(pos_left, scenario['anchor_states'])
+        assert metrics_left.s_along < 0.0
+        
+        # Beyond right anchor
+        pos_right = self.create_position_estimate("T1", scenario['t_now'], (25.0, 0.0, 0.0))
+        metrics_right = calc.compute_metrics(pos_right, scenario['anchor_states'])
+        assert metrics_right.s_along > 1.0
 
 
 # =============================================================================
-# Test Fixtures
-# =============================================================================
-
-
-@pytest.fixture
-def gate_config() -> GateConfig:
-    """Standard gate configuration."""
-    return GateConfig(
-        left_anchor_id="A0",
-        right_anchor_id="A1",
-        positive_direction="north",
-    )
-
-
-@pytest.fixture
-def gate_calculator(gate_config: GateConfig) -> GateMetricsCalculatorStub:
-    """Gate metrics calculator instance."""
-    return GateMetricsCalculatorStub(gate_config)
-
-
-@pytest.fixture
-def horizontal_gate() -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
-    """Horizontal gate (E-W) at y=0, from x=0 to x=10."""
-    left = (0.0, 0.0, 2.0)
-    right = (10.0, 0.0, 2.0)
-    return (left, right)
-
-
-@pytest.fixture
-def diagonal_gate() -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
-    """Diagonal gate from (0,0) to (10,10)."""
-    left = (0.0, 0.0, 2.0)
-    right = (10.0, 10.0, 2.0)
-    return (left, right)
-
-
-# =============================================================================
-# Perpendicular Distance Tests
-# =============================================================================
-
-
-class TestPerpendicularDistance:
-    """Tests for d_perp_signed calculation."""
-
-    def test_d_perp_on_line_is_zero(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test that point on line has zero perpendicular distance."""
-        left, right = horizontal_gate
-        tag_pos = (5.0, 0.0, 0.0)  # On the line
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert abs(metrics.d_perp_signed) < 0.01, (
-            f"d_perp should be ~0 for point on line, got {metrics.d_perp_signed}"
-        )
-
-    def test_d_perp_north_is_positive(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test that point north of E-W line has positive d_perp."""
-        left, right = horizontal_gate
-        tag_pos = (5.0, 5.0, 0.0)  # 5m north of line
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert metrics.d_perp_signed > 0, (
-            f"d_perp should be positive (north), got {metrics.d_perp_signed}"
-        )
-        assert abs(metrics.d_perp_signed - 5.0) < 0.1, (
-            f"d_perp should be ~5m, got {metrics.d_perp_signed}"
-        )
-
-    def test_d_perp_south_is_negative(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test that point south of E-W line has negative d_perp."""
-        left, right = horizontal_gate
-        tag_pos = (5.0, -3.0, 0.0)  # 3m south of line
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert metrics.d_perp_signed < 0, (
-            f"d_perp should be negative (south), got {metrics.d_perp_signed}"
-        )
-        assert abs(metrics.d_perp_signed + 3.0) < 0.1, (
-            f"d_perp should be ~-3m, got {metrics.d_perp_signed}"
-        )
-
-    def test_d_perp_diagonal_gate(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        diagonal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test perpendicular distance for diagonal gate."""
-        left, right = diagonal_gate
-        # Point at (0, 10) should be perpendicular distance of ~7.07m from line
-        tag_pos = (0.0, 10.0, 0.0)
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        expected_d_perp = 10.0 / math.sqrt(2)  # ~7.07m
-        assert abs(abs(metrics.d_perp_signed) - expected_d_perp) < 0.1, (
-            f"d_perp should be ~{expected_d_perp:.2f}m, got {metrics.d_perp_signed}"
-        )
-
-
-# =============================================================================
-# Along-Line Progress Tests
-# =============================================================================
-
-
-class TestAlongLineProgress:
-    """Tests for s_along calculation."""
-
-    def test_s_along_at_left_is_zero(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test s_along is 0 at left endpoint."""
-        left, right = horizontal_gate
-        tag_pos = (0.0, 0.0, 0.0)
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert abs(metrics.s_along) < 0.01, f"s_along should be ~0, got {metrics.s_along}"
-
-    def test_s_along_at_right_is_one(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test s_along is 1 at right endpoint."""
-        left, right = horizontal_gate
-        tag_pos = (10.0, 0.0, 0.0)
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert abs(metrics.s_along - 1.0) < 0.01, f"s_along should be ~1, got {metrics.s_along}"
-
-    def test_s_along_at_midpoint(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test s_along is 0.5 at midpoint."""
-        left, right = horizontal_gate
-        tag_pos = (5.0, 3.0, 0.0)  # Midpoint (perpendicular offset doesn't affect s_along)
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert abs(metrics.s_along - 0.5) < 0.05, f"s_along should be ~0.5, got {metrics.s_along}"
-
-    def test_s_along_clipped_beyond_endpoints(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test s_along is clipped to [0, 1] beyond endpoints."""
-        left, right = horizontal_gate
-
-        # Beyond left
-        metrics_left = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(-5.0, 0.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-        assert metrics_left.s_along == 0.0, "s_along should be clipped to 0"
-
-        # Beyond right
-        gate_calculator._prev_d_perp = None  # Reset for independent test
-        metrics_right = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(15.0, 0.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-        assert metrics_right.s_along == 1.0, "s_along should be clipped to 1"
-
-
-# =============================================================================
-# Crossing Detection Tests
+# Test Crossing Detection
 # =============================================================================
 
 
 class TestCrossingDetection:
-    """Tests for line crossing detection."""
-
-    def test_no_crossing_when_same_side(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test no crossing detected when staying on same side."""
-        left, right = horizontal_gate
-
-        # First position: north of line
-        gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 2.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
+    """Tests for crossing detection."""
+    
+    def create_test_scenario(self):
+        """Create test scenario."""
+        anchor_positions = {
+            "A0": (0.0, 0.0, 2.0),
+            "A1": (20.0, 0.0, 2.0),
+        }
+        
+        t_now = time.time()
+        quality = GNSSQuality(fix_type=GNSSFixType.GPS_FIX, hdop=1.0, num_satellites=10)
+        
+        trackers = {}
+        for aid, pos in anchor_positions.items():
+            tracker = AnchorTracker(aid)
+            tracker.update_gnss(t_now, pos, quality)
+            trackers[aid] = tracker
+        
+        anchor_states = {aid: t.predict(t_now) for aid, t in trackers.items()}
+        
+        return {'anchor_states': anchor_states, 't_now': t_now}
+    
+    def create_position_estimate(self, tag_id, t_solve, pos):
+        """Create position estimate."""
+        return PositionEstimate(
+            tag_id=tag_id,
+            t_solve=t_solve,
+            fix_type=FixType.FIX_2D,
+            pos_enu=pos,
+            quality_score=0.85,
+            num_anchors_used=3,
+            anchor_ids=["A0", "A1", "A2"],
+            residual_m=0.1,
         )
-
-        # Second position: still north
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 3.0, 0.0), t_bah=1.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert not metrics.crossing_detected, "No crossing should be detected"
-
-    def test_crossing_detected_north_to_south(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test crossing detected when moving north to south."""
-        left, right = horizontal_gate
-
-        # First position: north of line
-        gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 2.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        # Second position: south of line (crossed!)
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, -1.0, 0.0), t_bah=1.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert metrics.crossing_detected, "Crossing should be detected"
-
-    def test_crossing_detected_south_to_north(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test crossing detected when moving south to north."""
-        left, right = horizontal_gate
-
-        # First position: south of line
-        gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, -2.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        # Second position: north of line (crossed!)
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 1.0, 0.0), t_bah=1.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert metrics.crossing_detected, "Crossing should be detected"
-
-    def test_crossing_time_interpolation(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test crossing time is interpolated correctly."""
-        left, right = horizontal_gate
-
-        # First position: 2m north of line at t=0
-        gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 2.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        # Second position: 2m south of line at t=1 (crossed at t≈0.5)
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, -2.0, 0.0), t_bah=1.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert metrics.crossing_time_est is not None, "Crossing time should be estimated"
-        assert abs(metrics.crossing_time_est - 0.5) < 0.1, (
-            f"Crossing time should be ~0.5, got {metrics.crossing_time_est}"
-        )
-
-    def test_crossing_time_asymmetric(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test crossing time with asymmetric distances."""
-        left, right = horizontal_gate
-
-        # First position: 1m north at t=0
-        gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 1.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        # Second position: 3m south at t=1 (crossed at t≈0.25)
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, -3.0, 0.0), t_bah=1.0,
-            left_pos=left, right_pos=right,
-        )
-
-        expected_crossing_time = 0.0 + (1.0 - 0.0) * (1.0 / 4.0)  # 0.25
-        assert metrics.crossing_time_est is not None
-        assert abs(metrics.crossing_time_est - expected_crossing_time) < 0.1
+    
+    def test_no_crossing_same_side(self):
+        """
+        Test no crossing when tag stays on same side.
+        
+        Acceptance criterion: "Crossing events are detected consistently"
+        """
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        t0 = scenario['t_now']
+        dt = 0.1
+        
+        # Tag moves on left side only
+        positions = [
+            (10.0, -5.0, 0.0),  # Left side
+            (10.0, -4.0, 0.0),  # Still left
+            (10.0, -3.0, 0.0),  # Still left
+        ]
+        
+        for i, pos in enumerate(positions):
+            est = self.create_position_estimate("T1", t0 + i * dt, pos)
+            metrics = calc.compute_metrics(est, scenario['anchor_states'])
+            
+            # All should be left side, no crossing
+            assert metrics.is_left_of_line
+            assert not metrics.has_crossing
+    
+    def test_crossing_left_to_right(self):
+        """
+        Test crossing detection from left to right.
+        
+        Acceptance criterion: "Crossing events are detected consistently"
+        """
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        t0 = scenario['t_now']
+        dt = 0.1
+        
+        # Tag crosses from left (-) to right (+)
+        positions = [
+            (10.0, -1.0, 0.0),  # Left side
+            (10.0, 1.0, 0.0),   # Right side (crossing!)
+        ]
+        
+        # First position
+        est0 = self.create_position_estimate("T1", t0, positions[0])
+        metrics0 = calc.compute_metrics(est0, scenario['anchor_states'])
+        assert metrics0.is_left_of_line
+        assert not metrics0.has_crossing
+        
+        # Second position (crossing)
+        est1 = self.create_position_estimate("T1", t0 + dt, positions[1])
+        metrics1 = calc.compute_metrics(est1, scenario['anchor_states'])
+        assert metrics1.is_right_of_line
+        assert metrics1.has_crossing
+        assert metrics1.crossing_event == CrossingEvent.CROSSING_LEFT
+        assert metrics1.crossing_confidence > 0.0
+    
+    def test_crossing_right_to_left(self):
+        """Test crossing detection from right to left."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        t0 = scenario['t_now']
+        dt = 0.1
+        
+        # Tag crosses from right (+) to left (-)
+        positions = [
+            (10.0, 1.0, 0.0),   # Right side
+            (10.0, -1.0, 0.0),  # Left side (crossing!)
+        ]
+        
+        # First position
+        est0 = self.create_position_estimate("T1", t0, positions[0])
+        metrics0 = calc.compute_metrics(est0, scenario['anchor_states'])
+        assert metrics0.is_right_of_line
+        
+        # Second position (crossing)
+        est1 = self.create_position_estimate("T1", t0 + dt, positions[1])
+        metrics1 = calc.compute_metrics(est1, scenario['anchor_states'])
+        assert metrics1.is_left_of_line
+        assert metrics1.has_crossing
+        assert metrics1.crossing_event == CrossingEvent.CROSSING_RIGHT
+    
+    def test_multiple_crossings(self):
+        """Test multiple crossing detections."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        t0 = scenario['t_now']
+        dt = 0.1
+        
+        # Tag crosses multiple times
+        positions = [
+            (10.0, -1.0, 0.0),  # Left
+            (10.0, 1.0, 0.0),   # Right (crossing 1)
+            (10.0, -1.0, 0.0),  # Left (crossing 2)
+            (10.0, 1.0, 0.0),   # Right (crossing 3)
+        ]
+        
+        crossing_count = 0
+        
+        for i, pos in enumerate(positions):
+            est = self.create_position_estimate("T1", t0 + i * dt, pos)
+            metrics = calc.compute_metrics(est, scenario['anchor_states'])
+            
+            if metrics.has_crossing:
+                crossing_count += 1
+        
+        # Should detect 3 crossings (1→2, 2→3, 3→4)
+        assert crossing_count == 3
+    
+    def test_confidence_scoring(self):
+        """Test crossing confidence scoring."""
+        scenario = self.create_test_scenario()
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        t0 = scenario['t_now']
+        
+        # Crossing near line (high confidence)
+        est0_close = self.create_position_estimate("T1", t0, (10.0, -0.2, 0.0))
+        metrics0 = calc.compute_metrics(est0_close, scenario['anchor_states'])
+        
+        est1_close = self.create_position_estimate("T1", t0 + 0.1, (10.0, 0.2, 0.0))
+        metrics1_close = calc.compute_metrics(est1_close, scenario['anchor_states'])
+        
+        confidence_close = metrics1_close.crossing_confidence
+        
+        # Reset for second test
+        calc.reset_tag_history("T1")
+        
+        # Crossing far from line (lower confidence)
+        est0_far = self.create_position_estimate("T1", t0, (10.0, -5.0, 0.0))
+        calc.compute_metrics(est0_far, scenario['anchor_states'])
+        
+        est1_far = self.create_position_estimate("T1", t0 + 0.1, (10.0, 5.0, 0.0))
+        metrics1_far = calc.compute_metrics(est1_far, scenario['anchor_states'])
+        
+        confidence_far = metrics1_far.crossing_confidence
+        
+        # Close crossing should have higher confidence
+        assert confidence_close > confidence_far
 
 
 # =============================================================================
-# Confidence Tests
+# Test Acceptance Criteria
 # =============================================================================
 
 
-class TestCrossingConfidence:
-    """Tests for crossing confidence calculation."""
+class TestAcceptanceCriteria:
+    """Tests for P1-E acceptance criteria."""
+    
+    def test_stable_distance_with_gnss_jitter(self):
+        """
+        Test that signed distance is stable despite GNSS jitter.
+        
+        Acceptance criterion: "Signed distance-to-line is stable on water
+        (no obvious GNSS jitter artifacts)"
+        """
+        # Create anchors with jittery GNSS
+        anchor_positions_base = {
+            "A0": (0.0, 0.0, 2.0),
+            "A1": (20.0, 0.0, 2.0),
+        }
+        
+        t0 = time.time()
+        quality = GNSSQuality(fix_type=GNSSFixType.GPS_FIX, hdop=1.5, num_satellites=8)
+        
+        calc = GateCalculator(GateConfig(anchor_left_id="A0", anchor_right_id="A1"))
+        
+        # Simulate 10 position estimates with jittery anchors
+        d_perp_values = []
+        
+        for i in range(10):
+            t = t0 + i * 0.1
+            
+            # Add GNSS jitter to anchors (±30cm)
+            trackers = {}
+            for aid, base_pos in anchor_positions_base.items():
+                jitter = np.random.randn(3) * 0.3
+                noisy_pos = tuple(p + j for p, j in zip(base_pos, jitter))
+                
+                tracker = AnchorTracker(aid)
+                tracker.update_gnss(t, noisy_pos, quality)
+                trackers[aid] = tracker
+            
+            anchor_states = {aid: tracker.predict(t) for aid, tracker in trackers.items()}
+            
+            # Tag at fixed position
+            tag_pos = (10.0, -5.0, 0.0)
+            pos_estimate = PositionEstimate(
+                "T1", t, FixType.FIX_2D, tag_pos, 0.85, 3, ["A0", "A1", "A2"], 0.1
+            )
+            
+            metrics = calc.compute_metrics(pos_estimate, anchor_states)
+            d_perp_values.append(metrics.d_perp_signed)
+        
+        # Compute standard deviation of d_perp
+        d_perp_std = np.std(d_perp_values)
+        
+        # With 30cm anchor jitter, d_perp std should be < 50cm
+        # (some jitter is expected but not excessive)
+        assert d_perp_std < 0.5
 
-    def test_confidence_higher_with_lower_uncertainty(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test confidence is higher when position uncertainty is low."""
-        left, right = horizontal_gate
 
-        # Low uncertainty
-        metrics_low = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 2.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-            position_uncertainty=0.1,
-        )
-
-        # High uncertainty
-        gate_calculator._prev_d_perp = None  # Reset
-        metrics_high = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 2.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-            position_uncertainty=2.0,
-        )
-
-        assert metrics_low.crossing_confidence > metrics_high.crossing_confidence, (
-            "Lower uncertainty should give higher confidence"
-        )
-
-    def test_confidence_bounded_zero_one(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-        horizontal_gate: Tuple[Tuple[float, float, float], Tuple[float, float, float]],
-    ):
-        """Test confidence is bounded to [0, 1]."""
-        left, right = horizontal_gate
-
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=(5.0, 2.0, 0.0), t_bah=0.0,
-            left_pos=left, right_pos=right,
-        )
-
-        assert 0.0 <= metrics.crossing_confidence <= 1.0, (
-            f"Confidence should be in [0, 1], got {metrics.crossing_confidence}"
-        )
-
-
-# =============================================================================
-# Moving Gate Tests
-# =============================================================================
-
-
-class TestMovingGate:
-    """Tests for time-varying gate endpoints (buoy drift)."""
-
-    def test_gate_position_changes_over_time(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-    ):
-        """Test that moving gate endpoints affect metrics."""
-        # Gate at t=0
-        left_t0 = (0.0, 0.0, 2.0)
-        right_t0 = (10.0, 0.0, 2.0)
-
-        # Gate at t=1 (drifted 1m north)
-        left_t1 = (0.0, 1.0, 2.0)
-        right_t1 = (10.0, 1.0, 2.0)
-
-        tag_pos = (5.0, 0.5, 0.0)  # Fixed tag position
-
-        # Metrics at t=0
-        metrics_t0 = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left_t0, right_pos=right_t0,
-        )
-
-        # Metrics at t=1 (gate moved, tag didn't)
-        gate_calculator._prev_d_perp = None  # Reset to avoid crossing detection
-        metrics_t1 = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=1.0,
-            left_pos=left_t1, right_pos=right_t1,
-        )
-
-        # d_perp should change because gate moved
-        assert metrics_t0.d_perp_signed != metrics_t1.d_perp_signed, (
-            "d_perp should change when gate moves"
-        )
-
-    def test_stationary_tag_crosses_due_to_gate_movement(
-        self,
-        gate_calculator: GateMetricsCalculatorStub,
-    ):
-        """Test that stationary tag can 'cross' if gate moves past it."""
-        tag_pos = (5.0, 0.0, 0.0)  # Tag stays fixed
-
-        # Gate south of tag at t=0
-        left_t0 = (0.0, -2.0, 2.0)
-        right_t0 = (10.0, -2.0, 2.0)
-
-        # Gate north of tag at t=1 (moved 4m north)
-        left_t1 = (0.0, 2.0, 2.0)
-        right_t1 = (10.0, 2.0, 2.0)
-
-        # First measurement
-        gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=0.0,
-            left_pos=left_t0, right_pos=right_t0,
-        )
-
-        # Second measurement
-        metrics = gate_calculator.calculate(
-            tag_id="T1", tag_pos=tag_pos, t_bah=1.0,
-            left_pos=left_t1, right_pos=right_t1,
-        )
-
-        # Crossing detected even though tag didn't move
-        assert metrics.crossing_detected, (
-            "Crossing should be detected when gate moves past stationary tag"
-        )
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
