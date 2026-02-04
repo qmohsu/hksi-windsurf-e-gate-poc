@@ -1,0 +1,226 @@
+{
+  "timestamp": "2026-02-04T03:52:45.408694",
+  "git_commit": "4c37f786",
+  "git_branch": "main",
+  "algorithm_version": "3d_baseline",
+  "test_count": 11,
+  "success_count": 11,
+  "success_rate": 1.0,
+  "rmse_m": 6.030240329551395e-15,
+  "max_error_m": 1.8957200377026857e-14,
+  "percentile_95_m": 1.8957200377026857e-14,
+  "mean_error_m": 2.9982995705094163e-15,
+  "std_error_m": 5.232016639655418e-15,
+  "mean_solve_time_ms": 0.004018181822506118,
+  "test_results": [
+    {
+      "name": "3d_pos_5.0_2.9_0.0",
+      "ground_truth": [
+        5.0,
+        2.89,
+        0.0
+      ],
+      "estimated_position": [
+        5.0,
+        2.89,
+        0.0
+      ],
+      "error_m": 0.0,
+      "solve_time_ms": 0.008600000001024455,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_2.0_2.0_0.0",
+      "ground_truth": [
+        2.0,
+        2.0,
+        0.0
+      ],
+      "estimated_position": [
+        2.000000000000001,
+        1.9999999999999998,
+        1.3322676295501878e-15
+      ],
+      "error_m": 1.616509124176106e-15,
+      "solve_time_ms": 0.004800000169780105,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_8.0_2.0_0.0",
+      "ground_truth": [
+        8.0,
+        2.0,
+        0.0
+      ],
+      "estimated_position": [
+        8.0,
+        1.9999999999999993,
+        3.552713678800501e-15
+      ],
+      "error_m": 3.614624287906422e-15,
+      "solve_time_ms": 0.0033999995139311068,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_5.0_2.9_1.0",
+      "ground_truth": [
+        5.0,
+        2.89,
+        1.0
+      ],
+      "estimated_position": [
+        5.0,
+        2.89,
+        1.0
+      ],
+      "error_m": 0.0,
+      "solve_time_ms": 0.0027999994927085936,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_2.0_2.0_1.0",
+      "ground_truth": [
+        2.0,
+        2.0,
+        1.0
+      ],
+      "estimated_position": [
+        2.0,
+        1.9999999999999993,
+        0.9999999999999991
+      ],
+      "error_m": 1.1102230246251565e-15,
+      "solve_time_ms": 0.003200000719516538,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_8.0_2.0_1.0",
+      "ground_truth": [
+        8.0,
+        2.0,
+        1.0
+      ],
+      "estimated_position": [
+        8.0,
+        1.9999999999999993,
+        1.0
+      ],
+      "error_m": 6.661338147750939e-16,
+      "solve_time_ms": 0.0021999994714860804,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_5.0_4.0_2.0",
+      "ground_truth": [
+        5.0,
+        4.0,
+        2.0
+      ],
+      "estimated_position": [
+        5.0,
+        4.0,
+        2.0
+      ],
+      "error_m": 0.0,
+      "solve_time_ms": 0.002599999788799323,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_3.0_3.0_2.0",
+      "ground_truth": [
+        3.0,
+        3.0,
+        2.0
+      ],
+      "estimated_position": [
+        2.9999999999999996,
+        2.9999999999999996,
+        2.0
+      ],
+      "error_m": 6.280369834735101e-16,
+      "solve_time_ms": 0.005100000635138713,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_-2.0_-2.0_0.0",
+      "ground_truth": [
+        -2.0,
+        -2.0,
+        0.0
+      ],
+      "estimated_position": [
+        -1.9999999999999987,
+        -2.0000000000000013,
+        8.881784197001252e-16
+      ],
+      "error_m": 2.082963028648268e-15,
+      "solve_time_ms": 0.0035000002753804438,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_-2.0_-2.0_1.0",
+      "ground_truth": [
+        -2.0,
+        -2.0,
+        1.0
+      ],
+      "estimated_position": [
+        -1.9999999999999987,
+        -2.000000000000003,
+        1.0000000000000027
+      ],
+      "error_m": 4.305604634972164e-15,
+      "solve_time_ms": 0.003000000106112566,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "3d_pos_12.0_5.0_0.5",
+      "ground_truth": [
+        12.0,
+        5.0,
+        0.5
+      ],
+      "estimated_position": [
+        12.000000000000002,
+        5.0,
+        0.5000000000000189
+      ],
+      "error_m": 1.8957200377026857e-14,
+      "solve_time_ms": 0.004999999873689376,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    }
+  ]
+}

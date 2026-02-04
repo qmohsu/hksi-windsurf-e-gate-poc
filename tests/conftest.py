@@ -3,18 +3,98 @@ Pytest configuration and shared fixtures for HKSI UWB Positioning System tests.
 
 This module provides reusable fixtures for testing trilateration algorithms,
 coordinate conversion, network protocols, and system integration.
+
+Performance Baseline System:
+    - Use --baseline-record to record baseline before refactoring
+    - Use test_baseline_compare.py to detect regressions after changes
+    - See performance_baseline.py for threshold definitions
+
+Reference: Design Doc Sections 6-7 define accuracy and robustness requirements.
 """
 
 import sys
 import math
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 
 import pytest
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+
+# =============================================================================
+# Performance Thresholds (Design Doc Requirements)
+# =============================================================================
+
+
+PERFORMANCE_THRESHOLDS: Dict[str, Dict[str, float]] = {
+    "accuracy": {
+        "max_rmse_m": 0.15,              # Root mean square error
+        "max_95th_percentile_m": 0.25,   # 95% of errors below this
+        "max_error_m": 0.50,             # Absolute worst case
+        "center_tolerance_m": 0.10,      # Tolerance at center of anchor triangle
+        "edge_tolerance_m": 0.50,        # Tolerance outside anchor triangle
+    },
+    "robustness": {
+        "outlier_rejection_rate": 0.95,  # % of injected outliers caught
+        "false_positive_rate": 0.02,     # % valid ranges incorrectly rejected
+        "noise_tolerance_5cm": 0.20,     # Max error with ±5cm noise
+        "noise_tolerance_10cm": 0.35,    # Max error with ±10cm noise
+    },
+    "latency": {
+        "max_solve_time_ms": 5.0,        # Single trilateration solve
+        "max_e2e_latency_ms": 50.0,      # Full pipeline rx → output
+    },
+    "reliability": {
+        "min_solve_success_rate": 0.98,  # % of valid inputs producing output
+        "min_quality_correlation": 0.70,  # quality_score correlation with error
+    },
+}
+
+
+# =============================================================================
+# Custom Pytest Options
+# =============================================================================
+
+
+def pytest_addoption(parser: Any) -> None:
+    """Add custom command line options."""
+    parser.addoption(
+        "--baseline-record",
+        action="store_true",
+        default=False,
+        help="Record performance baseline (run before making algorithm changes)",
+    )
+    parser.addoption(
+        "--skip-slow",
+        action="store_true",
+        default=False,
+        help="Skip slow Monte Carlo and statistical tests",
+    )
+
+
+def pytest_configure(config: Any) -> None:
+    """Configure custom markers."""
+    config.addinivalue_line(
+        "markers", "slow: marks tests as slow (use --skip-slow to skip)"
+    )
+    config.addinivalue_line(
+        "markers", "baseline: tests related to baseline recording/comparison"
+    )
+    config.addinivalue_line(
+        "markers", "statistical: tests using statistical comparison"
+    )
+
+
+def pytest_collection_modifyitems(config: Any, items: List[Any]) -> None:
+    """Modify test collection based on command line options."""
+    if config.getoption("--skip-slow"):
+        skip_slow = pytest.mark.skip(reason="--skip-slow option provided")
+        for item in items:
+            if "slow" in item.keywords:
+                item.add_marker(skip_slow)
 
 from coordinate_converter import (
     CoordinateConverter,

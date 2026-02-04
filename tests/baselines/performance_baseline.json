@@ -1,0 +1,245 @@
+{
+  "timestamp": "2026-02-04T03:52:45.349405",
+  "git_commit": "4c37f786",
+  "git_branch": "main",
+  "algorithm_version": "2d_baseline",
+  "test_count": 12,
+  "success_count": 12,
+  "success_rate": 1.0,
+  "rmse_m": 1.7118023596227867e-15,
+  "max_error_m": 3.552713678800501e-15,
+  "percentile_95_m": 3.552713678800501e-15,
+  "mean_error_m": 1.189819307360064e-15,
+  "std_error_m": 1.2306897798565475e-15,
+  "mean_solve_time_ms": 0.0020000001465329356,
+  "test_results": [
+    {
+      "name": "2d_pos_5.0_2.9",
+      "ground_truth": [
+        5.0,
+        2.89,
+        0.0
+      ],
+      "estimated_position": [
+        5.0,
+        2.89,
+        0.0
+      ],
+      "error_m": 0.0,
+      "solve_time_ms": 0.004800000169780105,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_2.0_2.0",
+      "ground_truth": [
+        2.0,
+        2.0,
+        0.0
+      ],
+      "estimated_position": [
+        2.0,
+        2.0,
+        0.0
+      ],
+      "error_m": 0.0,
+      "solve_time_ms": 0.002499999936844688,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_8.0_2.0",
+      "ground_truth": [
+        8.0,
+        2.0,
+        0.0
+      ],
+      "estimated_position": [
+        8.0,
+        2.0000000000000004,
+        0.0
+      ],
+      "error_m": 4.440892098500626e-16,
+      "solve_time_ms": 0.0014000006558489986,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_5.0_6.0",
+      "ground_truth": [
+        5.0,
+        6.0,
+        0.0
+      ],
+      "estimated_position": [
+        5.0,
+        5.999999999999999,
+        0.0
+      ],
+      "error_m": 8.881784197001252e-16,
+      "solve_time_ms": 0.0017000002117129043,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_5.0_0.0",
+      "ground_truth": [
+        5.0,
+        0.0,
+        0.0
+      ],
+      "estimated_position": [
+        5.0,
+        0.0,
+        0.0
+      ],
+      "error_m": 0.0,
+      "solve_time_ms": 0.0012000000424450263,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_2.5_4.3",
+      "ground_truth": [
+        2.5,
+        4.33,
+        0.0
+      ],
+      "estimated_position": [
+        2.5,
+        4.33,
+        0.0
+      ],
+      "error_m": 0.0,
+      "solve_time_ms": 0.0012999998943996616,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_7.5_4.3",
+      "ground_truth": [
+        7.5,
+        4.33,
+        0.0
+      ],
+      "estimated_position": [
+        7.500000000000001,
+        4.33,
+        0.0
+      ],
+      "error_m": 8.881784197001252e-16,
+      "solve_time_ms": 0.0013000008038943633,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_-2.0_-2.0",
+      "ground_truth": [
+        -2.0,
+        -2.0,
+        0.0
+      ],
+      "estimated_position": [
+        -1.9999999999999987,
+        -2.000000000000003,
+        0.0
+      ],
+      "error_m": 3.3820826609804605e-15,
+      "solve_time_ms": 0.004100000296602957,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_12.0_0.0",
+      "ground_truth": [
+        12.0,
+        0.0,
+        0.0
+      ],
+      "estimated_position": [
+        12.000000000000002,
+        1.3127810360463745e-15,
+        0.0
+      ],
+      "error_m": 2.2088091066199088e-15,
+      "solve_time_ms": 0.00199999976757681,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_5.0_12.0",
+      "ground_truth": [
+        5.0,
+        12.0,
+        0.0
+      ],
+      "estimated_position": [
+        5.0,
+        12.000000000000004,
+        0.0
+      ],
+      "error_m": 3.552713678800501e-15,
+      "solve_time_ms": 0.0015000005078036338,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_0.0_5.0",
+      "ground_truth": [
+        0.0,
+        5.0,
+        0.0
+      ],
+      "estimated_position": [
+        -7.105427357601002e-16,
+        5.000000000000001,
+        0.0
+      ],
+      "error_m": 1.1374233532693355e-15,
+      "solve_time_ms": 0.0012999998943996616,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "2d_pos_10.0_5.0",
+      "ground_truth": [
+        10.0,
+        5.0,
+        0.0
+      ],
+      "estimated_position": [
+        10.0,
+        5.000000000000002,
+        0.0
+      ],
+      "error_m": 1.7763568394002505e-15,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    }
+  ]
+}

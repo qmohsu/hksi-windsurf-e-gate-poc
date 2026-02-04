@@ -1,0 +1,1917 @@
+{
+  "timestamp": "2026-02-04T03:52:45.471952",
+  "git_commit": "4c37f786",
+  "git_branch": "main",
+  "algorithm_version": "noise_5cm_baseline",
+  "test_count": 100,
+  "success_count": 100,
+  "success_rate": 1.0,
+  "rmse_m": 0.09762261267223407,
+  "max_error_m": 0.21363805589531357,
+  "percentile_95_m": 0.18478385213990844,
+  "mean_error_m": 0.08480957484567848,
+  "std_error_m": 0.048347807803956276,
+  "mean_solve_time_ms": 0.0009559999762132065,
+  "test_results": [
+    {
+      "name": "monte_carlo_0000",
+      "ground_truth": [
+        7.7885359691576745,
+        -4.499784895546661,
+        0.4125439775536789
+      ],
+      "estimated_position": [
+        7.758378484802665,
+        -4.394699002748865,
+        0.4125439775536789
+      ],
+      "error_m": 0.10932757533089454,
+      "solve_time_ms": 0.004399999852466863,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0001",
+      "ground_truth": [
+        -3.261223347411677,
+        3.438436393705409,
+        0.044695829157105516
+      ],
+      "estimated_position": [
+        -3.325319813871923,
+        3.3528454409510235,
+        0.044695829157105516
+      ],
+      "error_m": 0.10693067009091871,
+      "solve_time_ms": 0.0017000002117129043,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0002",
+      "ground_truth": [
+        -4.4692806063227275,
+        -1.0232469862670301,
+        0.9748266566692848
+      ],
+      "estimated_position": [
+        -4.4708520048353755,
+        -0.9200866541927081,
+        0.9748266566692848
+      ],
+      "error_m": 0.103172299610748,
+      "solve_time_ms": 0.0012000000424450263,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0003",
+      "ground_truth": [
+        -4.87002480643878,
+        11.116385036656158,
+        1.0472090924823403
+      ],
+      "estimated_position": [
+        -4.89984749974137,
+        11.036705278486044,
+        1.0472090924823403
+      ],
+      "error_m": 0.08507794601345411,
+      "solve_time_ms": 0.0010000003385357559,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0004",
+      "ground_truth": [
+        14.144261444135623,
+        1.7318909022525357,
+        0.13911876507022186
+      ],
+      "estimated_position": [
+        14.231910746899592,
+        1.9102455663679152,
+        0.13911876507022186
+      ],
+      "error_m": 0.1987279207527714,
+      "solve_time_ms": 0.000999999429041054,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0005",
+      "ground_truth": [
+        9.594635733876357,
+        5.724561829094014,
+        1.459673645969056
+      ],
+      "estimated_position": [
+        9.55953078720368,
+        5.64611284521937,
+        1.459673645969056
+      ],
+      "error_m": 0.08594533350831646,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0006",
+      "ground_truth": [
+        11.588093285059898,
+        7.370395047284921,
+        1.2925603504661658
+      ],
+      "estimated_position": [
+        11.52094419663698,
+        7.272863583603688,
+        1.2925603504661658
+      ],
+      "error_m": 0.11841193556323819,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0007",
+      "ground_truth": [
+        0.7877592720421429,
+        -3.40416046152745,
+        0.34918632954154527
+      ],
+      "estimated_position": [
+        0.7592941849436614,
+        -3.418791489683069,
+        0.34918632954154527
+      ],
+      "error_m": 0.03200512722072274,
+      "solve_time_ms": 0.0015000005078036338,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0008",
+      "ground_truth": [
+        7.713688885288004,
+        2.2966435794016853,
+        0.555271450675324
+      ],
+      "estimated_position": [
+        7.708199365003244,
+        2.254570431918369,
+        0.555271450675324
+      ],
+      "error_m": 0.04242976045312642,
+      "solve_time_ms": 0.0010000003385357559,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0009",
+      "ground_truth": [
+        7.182620113339764,
+        -1.5772270360380602,
+        1.0936901969255237
+      ],
+      "estimated_position": [
+        7.153397227666952,
+        -1.6350732337083642,
+        1.0936901969255237
+      ],
+      "error_m": 0.06480863855967149,
+      "solve_time_ms": 0.0010000003385357559,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0010",
+      "ground_truth": [
+        14.790467012731906,
+        7.7999951970818575,
+        0.8354246156619693
+      ],
+      "estimated_position": [
+        14.807134016050195,
+        7.709396646816815,
+        0.8354246156619693
+      ],
+      "error_m": 0.09211887054094448,
+      "solve_time_ms": 0.0010000003385357559,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0011",
+      "ground_truth": [
+        -4.357995121919245,
+        1.309060961181638,
+        0.4016113139635541
+      ],
+      "estimated_position": [
+        -4.417259623001536,
+        1.1618282465684917,
+        0.4016113139635541
+      ],
+      "error_m": 0.1587128014398619,
+      "solve_time_ms": 0.000999999429041054,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0012",
+      "ground_truth": [
+        12.527352529453378,
+        1.2935576159695579,
+        0.9831579979423201
+      ],
+      "estimated_position": [
+        12.396058034926687,
+        1.287816325918667,
+        0.9831579979423201
+      ],
+      "error_m": 0.13141996311241136,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0013",
+      "ground_truth": [
+        -0.067449846120331,
+        6.227362683263015,
+        0.3941124127844029
+      ],
+      "estimated_position": [
+        0.04856346781650843,
+        6.2042017471187805,
+        0.3941124127844029
+      ],
+      "error_m": 0.11830265412781316,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0014",
+      "ground_truth": [
+        2.9880101028079453,
+        -0.613584816854333,
+        1.4963064097426653
+      ],
+      "estimated_position": [
+        2.982218237176993,
+        -0.6433158588903416,
+        1.4963064097426653
+      ],
+      "error_m": 0.03028994169743343,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0015",
+      "ground_truth": [
+        7.5489208340618,
+        10.841587287259282,
+        0.6332399501995261
+      ],
+      "estimated_position": [
+        7.507573579135861,
+        10.868253267761723,
+        0.6332399501995261
+      ],
+      "error_m": 0.049200304938762075,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0016",
+      "ground_truth": [
+        14.922427604801936,
+        5.582286901982741,
+        1.4566175664204273
+      ],
+      "estimated_position": [
+        14.934545292007245,
+        5.6008745335926235,
+        1.4566175664204273
+      ],
+      "error_m": 0.0221886996480288,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0017",
+      "ground_truth": [
+        5.739406608175903,
+        0.33650379905085614,
+        0.9614426978697121
+      ],
+      "estimated_position": [
+        5.678191548748103,
+        0.2884270628849014,
+        0.9614426978697121
+      ],
+      "error_m": 0.07783736931011954,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0018",
+      "ground_truth": [
+        4.074474126584128,
+        14.076318550421604,
+        1.313779410567291
+      ],
+      "estimated_position": [
+        3.9772806878157825,
+        14.093320248520397,
+        1.313779410567291
+      ],
+      "error_m": 0.09866925700469592,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0019",
+      "ground_truth": [
+        12.41037139673534,
+        0.9688958289726575,
+        0.9584242422990077
+      ],
+      "estimated_position": [
+        12.541364335800559,
+        1.0598945688410826,
+        0.9584242422990077
+      ],
+      "error_m": 0.15949896784175618,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0020",
+      "ground_truth": [
+        10.250216001503025,
+        5.787580602392515,
+        1.1679397179458373
+      ],
+      "estimated_position": [
+        10.248444173557916,
+        5.789448284844469,
+        1.1679397179458373
+      ],
+      "error_m": 0.00257441488661197,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0021",
+      "ground_truth": [
+        13.581972325292341,
+        12.574437556463685,
+        1.2474982940417692
+      ],
+      "estimated_position": [
+        13.606384408142087,
+        12.561629376964719,
+        1.2474982940417692
+      ],
+      "error_m": 0.027568083922184964,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0022",
+      "ground_truth": [
+        12.56019198408081,
+        13.938988905959881,
+        0.12848017810181817
+      ],
+      "estimated_position": [
+        12.522259465892283,
+        13.913672625225551,
+        0.12848017810181817
+      ],
+      "error_m": 0.04560471473808711,
+      "solve_time_ms": 0.0017000002117129043,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0023",
+      "ground_truth": [
+        -2.432170710004744,
+        4.505647561974627,
+        0.8247053902424158
+      ],
+      "estimated_position": [
+        -2.463747526190346,
+        4.371881697380866,
+        0.8247053902424158
+      ],
+      "error_m": 0.13744235828497547,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0024",
+      "ground_truth": [
+        3.4627588040177386,
+        -0.7640358911583593,
+        0.8089441331691876
+      ],
+      "estimated_position": [
+        3.4833636160904446,
+        -0.7093901176428438,
+        0.8089441331691876
+      ],
+      "error_m": 0.05840135994701285,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0025",
+      "ground_truth": [
+        7.9975611527890695,
+        3.7620016782900816,
+        0.7763637615533859
+      ],
+      "estimated_position": [
+        8.122034339450137,
+        3.8304400705962007,
+        0.7763637615533859
+      ],
+      "error_m": 0.14204713210412634,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0026",
+      "ground_truth": [
+        1.7617112429491062,
+        6.766174369144666,
+        0.3451720988948655
+      ],
+      "estimated_position": [
+        1.7439191991975322,
+        6.790973904309719,
+        0.3451720988948655
+      ],
+      "error_m": 0.03052169335506465,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0027",
+      "ground_truth": [
+        13.108400260122558,
+        12.19270800507493,
+        0.10628602483298016
+      ],
+      "estimated_position": [
+        13.05368838486407,
+        12.091594879558459,
+        0.10628602483298016
+      ],
+      "error_m": 0.11496631439691375,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0028",
+      "ground_truth": [
+        -0.715263852591228,
+        -2.3537630254995,
+        1.4032713608710066
+      ],
+      "estimated_position": [
+        -0.7012499604387088,
+        -2.404738987734562,
+        1.4032713608710066
+      ],
+      "error_m": 0.05286717222485911,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0029",
+      "ground_truth": [
+        -1.1918017127624458,
+        -3.0613837154235335,
+        0.6465767736095662
+      ],
+      "estimated_position": [
+        -1.1649063787329,
+        -3.152728512973219,
+        0.6465767736095662
+      ],
+      "error_m": 0.09522200917830878,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0030",
+      "ground_truth": [
+        9.581516989197013,
+        8.467290945866031,
+        1.4762478170489493
+      ],
+      "estimated_position": [
+        9.609492728558319,
+        8.540394076395737,
+        1.4762478170489493
+      ],
+      "error_m": 0.07827330123391335,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0031",
+      "ground_truth": [
+        -0.026873321594287347,
+        -1.1958218311837698,
+        0.6729203217496978
+      ],
+      "estimated_position": [
+        0.024752820205628013,
+        -1.2323745704992177,
+        0.6729203217496978
+      ],
+      "error_m": 0.06325631406119121,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0032",
+      "ground_truth": [
+        -0.0038710423579901843,
+        13.465311985520255,
+        0.6646961175801854
+      ],
+      "estimated_position": [
+        0.13256331988155667,
+        13.300913434045441,
+        0.6646961175801854
+      ],
+      "error_m": 0.21363805589531357,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0033",
+      "ground_truth": [
+        11.720551701599039,
+        14.379925145695026,
+        1.3895504745121914
+      ],
+      "estimated_position": [
+        11.805678557528047,
+        14.483462586965986,
+        1.3895504745121914
+      ],
+      "error_m": 0.13403948427719248,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0034",
+      "ground_truth": [
+        4.712822509014369,
+        -0.725054016016367,
+        0.6015604388241789
+      ],
+      "estimated_position": [
+        4.725838318047899,
+        -0.7492580943794898,
+        0.6015604388241789
+      ],
+      "error_m": 0.027481788409881375,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0035",
+      "ground_truth": [
+        10.681412038971388,
+        4.100167346782866,
+        0.6345112289852444
+      ],
+      "estimated_position": [
+        10.606759067224491,
+        4.175565599250156,
+        0.6345112289852444
+      ],
+      "error_m": 0.10610354690472931,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0036",
+      "ground_truth": [
+        6.115366468112365,
+        9.36816550592652,
+        0.2321952379110962
+      ],
+      "estimated_position": [
+        5.9418247987149355,
+        9.432474424114389,
+        0.2321952379110962
+      ],
+      "error_m": 0.18507389868844468,
+      "solve_time_ms": 0.0015000005078036338,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0037",
+      "ground_truth": [
+        9.959511207581283,
+        -3.8566945418503384,
+        0.8762663916884568
+      ],
+      "estimated_position": [
+        9.966351821916351,
+        -3.894848340186025,
+        0.8762663916884568
+      ],
+      "error_m": 0.03876217656326074,
+      "solve_time_ms": 0.0013999997463542968,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0038",
+      "ground_truth": [
+        -1.8513454412103347,
+        14.215578065489009,
+        0.12016719786088031
+      ],
+      "estimated_position": [
+        -1.928397255823987,
+        14.321398781266053,
+        0.12016719786088031
+      ],
+      "error_m": 0.13090074874813604,
+      "solve_time_ms": 0.0015000005078036338,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0039",
+      "ground_truth": [
+        -2.6022677210575162,
+        12.80574628258875,
+        0.3693230216829373
+      ],
+      "estimated_position": [
+        -2.5414642342917535,
+        12.760538508949386,
+        0.3693230216829373
+      ],
+      "error_m": 0.07576811202809683,
+      "solve_time_ms": 0.0013999997463542968,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0040",
+      "ground_truth": [
+        3.3844983067174503,
+        6.673445785824494,
+        0.7841740732979383
+      ],
+      "estimated_position": [
+        3.420806791877024,
+        6.682214755722949,
+        0.7841740732979383
+      ],
+      "error_m": 0.03735238851349403,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0041",
+      "ground_truth": [
+        2.91571693582509,
+        8.433804459199425,
+        0.44999561969814333
+      ],
+      "estimated_position": [
+        2.9205381175511276,
+        8.370015647086937,
+        0.44999561969814333
+      ],
+      "error_m": 0.06397074600126051,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0042",
+      "ground_truth": [
+        -3.5491377101368538,
+        4.165710452371723,
+        1.4976816612816635
+      ],
+      "estimated_position": [
+        -3.537724693446582,
+        4.161453435520316,
+        1.4976816612816635
+      ],
+      "error_m": 0.012181097752074403,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0043",
+      "ground_truth": [
+        13.66518755987418,
+        12.61728347372879,
+        1.3189053637268142
+      ],
+      "estimated_position": [
+        13.762650831966809,
+        12.619560561791051,
+        1.3189053637268142
+      ],
+      "error_m": 0.09748986889438857,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0044",
+      "ground_truth": [
+        11.674899092796139,
+        9.070798501747419,
+        0.9175166485889252
+      ],
+      "estimated_position": [
+        11.788219597911814,
+        9.057467605861127,
+        0.9175166485889252
+      ],
+      "error_m": 0.11410192664807613,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0045",
+      "ground_truth": [
+        0.9875750439995574,
+        8.267774299321546,
+        1.4083950058906558
+      ],
+      "estimated_position": [
+        0.9711888122574246,
+        8.272875667513093,
+        1.4083950058906558
+      ],
+      "error_m": 0.017161950592301644,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0046",
+      "ground_truth": [
+        -2.859280445811647,
+        6.064472817696318,
+        0.4085223184722245
+      ],
+      "estimated_position": [
+        -2.832907007293557,
+        5.97957578615169,
+        0.4085223184722245
+      ],
+      "error_m": 0.08889918011071335,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0047",
+      "ground_truth": [
+        0.2796780326081887,
+        4.770637042987531,
+        1.358004736618985
+      ],
+      "estimated_position": [
+        0.2990986489384341,
+        4.810352488476069,
+        1.358004736618985
+      ],
+      "error_m": 0.04420946673507474,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0048",
+      "ground_truth": [
+        3.471515451274527,
+        0.5336044794450334,
+        0.00531853363167345
+      ],
+      "estimated_position": [
+        3.5233938781843395,
+        0.5141079727301431,
+        0.00531853363167345
+      ],
+      "error_m": 0.055420979355479606,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0049",
+      "ground_truth": [
+        6.033608422527825,
+        3.5537383796135877,
+        0.014504549412509948
+      ],
+      "estimated_position": [
+        6.040766890539051,
+        3.5883972895124967,
+        0.014504549412509948
+      ],
+      "error_m": 0.03539044644601749,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0050",
+      "ground_truth": [
+        13.078571431197862,
+        5.911805784110447,
+        1.251892529829025
+      ],
+      "estimated_position": [
+        13.05266041203845,
+        5.856381789086191,
+        1.251892529829025
+      ],
+      "error_m": 0.061181697739831606,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0051",
+      "ground_truth": [
+        12.979629774851801,
+        10.922446097760833,
+        1.291053873001354
+      ],
+      "estimated_position": [
+        13.000603950846171,
+        10.990366852548446,
+        1.291053873001354
+      ],
+      "error_m": 0.07108547664299536,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0052",
+      "ground_truth": [
+        -0.00940521554151097,
+        -2.9441275665642874,
+        1.1701743628071641
+      ],
+      "estimated_position": [
+        0.03783167763335484,
+        -2.9271068150147705,
+        1.1701743628071641
+      ],
+      "error_m": 0.05020986018825451,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0053",
+      "ground_truth": [
+        13.597620313873488,
+        12.292113924399281,
+        1.4643090493964444
+      ],
+      "estimated_position": [
+        13.511715052991354,
+        12.402456131160399,
+        1.4643090493964444
+      ],
+      "error_m": 0.13983960969675494,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0054",
+      "ground_truth": [
+        -4.5042727620362255,
+        9.731289435101642,
+        0.498278201919643
+      ],
+      "estimated_position": [
+        -4.349146378708105,
+        9.676987383335891,
+        0.498278201919643
+      ],
+      "error_m": 0.16435603922714015,
+      "solve_time_ms": 0.0018000000636675395,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0055",
+      "ground_truth": [
+        0.3361141918894406,
+        10.747490182709424,
+        0.16214343960443567
+      ],
+      "estimated_position": [
+        0.1610188599040015,
+        10.806538440334627,
+        0.16214343960443567
+      ],
+      "error_m": 0.18478385213990844,
+      "solve_time_ms": 0.000999999429041054,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0056",
+      "ground_truth": [
+        -0.5513256490867118,
+        11.331732111938578,
+        0.6904548520184131
+      ],
+      "estimated_position": [
+        -0.7163541919583722,
+        11.386032222297494,
+        0.6904548520184131
+      ],
+      "error_m": 0.17373232844618747,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0057",
+      "ground_truth": [
+        -1.1374042334458268,
+        1.5652390239541303,
+        1.2965294130454295
+      ],
+      "estimated_position": [
+        -1.1798490021080315,
+        1.6014001255567145,
+        1.2965294130454295
+      ],
+      "error_m": 0.05576005430324198,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0058",
+      "ground_truth": [
+        7.829634772152554,
+        2.9935676872012174,
+        1.47172453079739
+      ],
+      "estimated_position": [
+        7.743404651049545,
+        2.858843170754287,
+        1.47172453079739
+      ],
+      "error_m": 0.15995727278651264,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0059",
+      "ground_truth": [
+        -1.428643676550727,
+        14.25068631523111,
+        0.39819954378445294
+      ],
+      "estimated_position": [
+        -1.3776622668960414,
+        14.334333850090061,
+        0.39819954378445294
+      ],
+      "error_m": 0.09795924774291752,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0060",
+      "ground_truth": [
+        9.570901213054086,
+        1.2735462838998242,
+        0.909313279959215
+      ],
+      "estimated_position": [
+        9.523836510724642,
+        1.2799572393235625,
+        0.909313279959215
+      ],
+      "error_m": 0.04749933215113938,
+      "solve_time_ms": 0.000999999429041054,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0061",
+      "ground_truth": [
+        9.175705676683412,
+        -4.96617443562741,
+        1.388362748248624
+      ],
+      "estimated_position": [
+        9.196125757106355,
+        -4.967967678212796,
+        1.388362748248624
+      ],
+      "error_m": 0.020498668333564642,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0062",
+      "ground_truth": [
+        9.83900155678953,
+        8.41257008865999,
+        0.5463322076718963
+      ],
+      "estimated_position": [
+        9.899403957057057,
+        8.490719207259618,
+        0.5463322076718963
+      ],
+      "error_m": 0.09877112278382418,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0063",
+      "ground_truth": [
+        11.960305590126708,
+        9.395085260279004,
+        0.45048340231689626
+      ],
+      "estimated_position": [
+        12.036591744049598,
+        9.378589395002082,
+        0.45048340231689626
+      ],
+      "error_m": 0.07804928476021551,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0064",
+      "ground_truth": [
+        3.0480077411544926,
+        0.9131040505189407,
+        0.19093169858872983
+      ],
+      "estimated_position": [
+        2.9690386945036336,
+        0.9601810984473296,
+        0.19093169858872983
+      ],
+      "error_m": 0.09193671067967012,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0065",
+      "ground_truth": [
+        7.310298319027611,
+        1.018997491311307,
+        0.8219058197035474
+      ],
+      "estimated_position": [
+        7.2254787769546285,
+        0.98478337595655,
+        0.8219058197035474
+      ],
+      "error_m": 0.091460157483896,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0066",
+      "ground_truth": [
+        3.597762999796693,
+        6.5996956239136395,
+        0.9820584355546074
+      ],
+      "estimated_position": [
+        3.5469996806072355,
+        6.578999327761007,
+        0.9820584355546074
+      ],
+      "error_m": 0.05482017192209631,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0067",
+      "ground_truth": [
+        13.023616516565085,
+        10.920495202535605,
+        0.2545370942970821
+      ],
+      "estimated_position": [
+        13.058407122076103,
+        10.979256636079986,
+        0.2545370942970821
+      ],
+      "error_m": 0.06828830283448288,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0068",
+      "ground_truth": [
+        7.658817115315914,
+        1.7037651081960181,
+        1.2276351968049963
+      ],
+      "estimated_position": [
+        7.681355909999901,
+        1.686666194578991,
+        1.2276351968049963
+      ],
+      "error_m": 0.028290813220716707,
+      "solve_time_ms": 0.0010999992809956893,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0069",
+      "ground_truth": [
+        -4.511492245463473,
+        -0.1031491184329969,
+        0.7127045163282077
+      ],
+      "estimated_position": [
+        -4.5126193100729965,
+        -0.060986079509968295,
+        0.7127045163282077
+      ],
+      "error_m": 0.04217810007407713,
+      "solve_time_ms": 0.0010000003385357559,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0070",
+      "ground_truth": [
+        3.2888202199543866,
+        7.595307614754274,
+        0.29165285510956396
+      ],
+      "estimated_position": [
+        3.329008461846969,
+        7.552436770194737,
+        0.29165285510956396
+      ],
+      "error_m": 0.058762267652506056,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0071",
+      "ground_truth": [
+        -4.889103637239365,
+        10.019289532369458,
+        1.1550692828610376
+      ],
+      "estimated_position": [
+        -4.881415683502843,
+        10.07156061153638,
+        1.1550692828610376
+      ],
+      "error_m": 0.052833420766874674,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0072",
+      "ground_truth": [
+        -1.4822663658693669,
+        14.159320845590795,
+        0.7769366256656112
+      ],
+      "estimated_position": [
+        -1.4522499089110783,
+        14.169666453737989,
+        0.7769366256656112
+      ],
+      "error_m": 0.031749319618915896,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0073",
+      "ground_truth": [
+        11.028332034445288,
+        8.351554651727062,
+        1.481838679599672
+      ],
+      "estimated_position": [
+        11.050806167114816,
+        8.31481298662811,
+        1.481838679599672
+      ],
+      "error_m": 0.04307013574962375,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0074",
+      "ground_truth": [
+        12.828518516208739,
+        7.253046455235257,
+        1.0789109419139506
+      ],
+      "estimated_position": [
+        12.69212555547928,
+        7.26532519700572,
+        1.0789109419139506
+      ],
+      "error_m": 0.13694454073096002,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0075",
+      "ground_truth": [
+        9.873108843191698,
+        4.493488736461067,
+        0.388787322697529
+      ],
+      "estimated_position": [
+        9.837915443181837,
+        4.419179024952203,
+        0.388787322697529
+      ],
+      "error_m": 0.08222231223205048,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0076",
+      "ground_truth": [
+        10.316273685943308,
+        5.4259962565596425,
+        0.9401226554726719
+      ],
+      "estimated_position": [
+        10.301648943586493,
+        5.4367187139162345,
+        0.9401226554726719
+      ],
+      "error_m": 0.018134337064452336,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0077",
+      "ground_truth": [
+        1.394191368375246,
+        5.8030444503691285,
+        0.20756109227423358
+      ],
+      "estimated_position": [
+        1.4089316035460968,
+        5.778652752608454,
+        0.20756109227423358
+      ],
+      "error_m": 0.02849963951596731,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0078",
+      "ground_truth": [
+        9.128382833891045,
+        -3.7154229857224386,
+        0.6113990544998801
+      ],
+      "estimated_position": [
+        9.084310609732439,
+        -3.768486670762159,
+        0.6113990544998801
+      ],
+      "error_m": 0.06897909547305675,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0079",
+      "ground_truth": [
+        13.096769566803538,
+        6.681588284084503,
+        1.043284479746952
+      ],
+      "estimated_position": [
+        13.131548980954964,
+        6.811602807947138,
+        1.043284479746952
+      ],
+      "error_m": 0.134585972760701,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0080",
+      "ground_truth": [
+        2.607620578554233,
+        -4.882078328320139,
+        0.527638204007737
+      ],
+      "estimated_position": [
+        2.6963446642527953,
+        -5.011714136434714,
+        0.527638204007737
+      ],
+      "error_m": 0.15709043932895694,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0081",
+      "ground_truth": [
+        9.950313379561015,
+        5.922646194676782,
+        0.904878883411862
+      ],
+      "estimated_position": [
+        9.92893878634703,
+        5.891728392417713,
+        0.904878883411862
+      ],
+      "error_m": 0.037587015465372804,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0082",
+      "ground_truth": [
+        3.716719520932731,
+        -4.419503601065696,
+        0.5041943155475737
+      ],
+      "estimated_position": [
+        3.739511735384879,
+        -4.491395094175068,
+        0.5041943155475737
+      ],
+      "error_m": 0.0754179807547756,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0083",
+      "ground_truth": [
+        -2.447444054376786,
+        7.445139219481295,
+        0.040449677857706534
+      ],
+      "estimated_position": [
+        -2.3342367484974718,
+        7.389042426856217,
+        0.040449677857706534
+      ],
+      "error_m": 0.12634375428676173,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0084",
+      "ground_truth": [
+        -4.457959073193751,
+        7.854992960186715,
+        0.20354923084584636
+      ],
+      "estimated_position": [
+        -4.478647958120715,
+        7.8782226129670905,
+        0.20354923084584636
+      ],
+      "error_m": 0.031107020555140513,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0085",
+      "ground_truth": [
+        1.5369160976261709,
+        10.224594157880542,
+        0.5686893233462045
+      ],
+      "estimated_position": [
+        1.5601395703498087,
+        10.283600674244662,
+        0.5686893233462045
+      ],
+      "error_m": 0.06341213337189232,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0086",
+      "ground_truth": [
+        0.045430635647612405,
+        -3.361875344767149,
+        0.029074930575016034
+      ],
+      "estimated_position": [
+        0.02252242070673347,
+        -3.3756121276181794,
+        0.029074930575016034
+      ],
+      "error_m": 0.02671114963594551,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0087",
+      "ground_truth": [
+        10.624660992217898,
+        8.035093104877788,
+        1.1313498060892893
+      ],
+      "estimated_position": [
+        10.677372736951513,
+        8.10210054576083,
+        1.1313498060892893
+      ],
+      "error_m": 0.08525564595119943,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0088",
+      "ground_truth": [
+        -4.592399653593353,
+        -1.9523530843041925,
+        0.18933146231130937
+      ],
+      "estimated_position": [
+        -4.52550419090761,
+        -2.035885028745559,
+        0.18933146231130937
+      ],
+      "error_m": 0.10701676817254001,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0089",
+      "ground_truth": [
+        10.337961967124816,
+        -1.6442171326439547,
+        0.9108712408363975
+      ],
+      "estimated_position": [
+        10.418263511102506,
+        -1.5647728740038975,
+        0.9108712408363975
+      ],
+      "error_m": 0.11295896686881117,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0090",
+      "ground_truth": [
+        11.386023486221703,
+        14.294415460681755,
+        0.16214812448640986
+      ],
+      "estimated_position": [
+        11.454439584283229,
+        14.401222297080299,
+        0.16214812448640986
+      ],
+      "error_m": 0.12684030422318324,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0091",
+      "ground_truth": [
+        2.9330888303325464,
+        9.300294100989369,
+        0.11399471676458994
+      ],
+      "estimated_position": [
+        2.851674320384558,
+        9.239774533083933,
+        0.11399471676458994
+      ],
+      "error_m": 0.10144427302480781,
+      "solve_time_ms": 0.0008999995770864189,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0092",
+      "ground_truth": [
+        -2.9619738910804694,
+        10.449617699024481,
+        1.2754398586331943
+      ],
+      "estimated_position": [
+        -2.9593211339723298,
+        10.33967702831241,
+        1.2754398586331943
+      ],
+      "error_m": 0.10997267022717393,
+      "solve_time_ms": 0.0009000004865811206,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0093",
+      "ground_truth": [
+        1.9440753061689797,
+        3.5675602646948885,
+        0.5558563143270843
+      ],
+      "estimated_position": [
+        1.980915498260237,
+        3.5430940259243107,
+        0.5558563143270843
+      ],
+      "error_m": 0.04422438911844533,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0094",
+      "ground_truth": [
+        11.991512539991547,
+        11.44661836180116,
+        0.15830830596599788
+      ],
+      "estimated_position": [
+        12.127039772875586,
+        11.467983295035902,
+        0.15830830596599788
+      ],
+      "error_m": 0.13720091554114885,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0095",
+      "ground_truth": [
+        3.7097429001535414,
+        9.675906080267838,
+        1.4482105968571166
+      ],
+      "estimated_position": [
+        3.651595057993864,
+        9.608582330464515,
+        1.4482105968571166
+      ],
+      "error_m": 0.08895874794199422,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0096",
+      "ground_truth": [
+        5.763458128965116,
+        4.669950077663923,
+        0.6533617395058414
+      ],
+      "estimated_position": [
+        5.785143428205048,
+        4.625375985251746,
+        0.6533617395058414
+      ],
+      "error_m": 0.04956916296947859,
+      "solve_time_ms": 0.0008000006346264854,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0097",
+      "ground_truth": [
+        -3.266742038886512,
+        12.632623680055438,
+        0.365795158786434
+      ],
+      "estimated_position": [
+        -3.242988124125315,
+        12.488123646833698,
+        0.365795158786434
+      ],
+      "error_m": 0.1464394348103215,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0098",
+      "ground_truth": [
+        2.579786082565281,
+        -4.426000044598208,
+        1.2764292544686886
+      ],
+      "estimated_position": [
+        2.559934085139819,
+        -4.426749511058129,
+        1.2764292544686886
+      ],
+      "error_m": 0.019866139578567046,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    },
+    {
+      "name": "monte_carlo_0099",
+      "ground_truth": [
+        12.606399595164508,
+        9.023675006644032,
+        0.41440286363427736
+      ],
+      "estimated_position": [
+        12.42226551847786,
+        9.044736301286116,
+        0.41440286363427736
+      ],
+      "error_m": 0.18533466035592264,
+      "solve_time_ms": 0.0007999997251317836,
+      "success": true,
+      "quality_score": null,
+      "anchors_used": 3,
+      "residual_rms": null
+    }
+  ]
+}
