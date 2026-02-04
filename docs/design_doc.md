@@ -1,299 +1,333 @@
-Buoy Anchor Hub Subsystem Design Doc (v0.3) — Phase 1: GNSS + UWB only
-========================================================================
+# Buoy Anchor Hub Subsystem Design Doc (v0.4)
+## Phase 1: GNSS + UWB only
 
-1) Scope and boundaries
------------------------
+## 1. Scope and Boundaries
 
-In scope (Phase 1)
+### 1.1 In Scope (Phase 1)
 
-- Buoy Anchor Hub (BAH) on one buoy:
-  - Receives UWB range reports from multiple anchors (Follower Anchors, FA)
-  - Receives GNSS position updates for anchors (could be from each anchor's GNSS,
-    or centralized if you decide)
-  - Computes tag position estimates locally using UWB multilateration
-  - Sends position estimates + quality + system health to the server
+**Buoy Anchor Hub (BAH)** on one buoy:
 
-Explicitly out of scope (Phase 1)
+- Receives UWB range reports from multiple anchors (Follower Anchors, FA)
+- Receives GNSS position updates for anchors (could be from each anchor's GNSS, or centralized if you decide)
+- Computes tag position estimates locally using UWB multilateration
+- Computes start-line / gate metrics (moving-gate, based on buoy endpoints)
+- Sends position estimates + quality + system health to the server
+
+### 1.2 Explicitly Out of Scope (Phase 1)
 
 - Any UWB+IMU fusion (both on anchors and on tags)
 - Any dead-reckoning during occlusion using IMU
 - Coach UI, replay, analytics, RBAC, etc.
 
-Practical implication: during UWB dropouts/occlusion, Phase 1 can only
-smooth/hold using a simple motion model, but cannot "bridge" gaps with IMU.
+**Practical implication:** During UWB dropouts/occlusion, Phase 1 can only smooth/hold using a simple motion model, but cannot "bridge" gaps with IMU.
 
-2) Phase 1 system objective (definition of "done")
---------------------------------------------------
+## 2. Phase 1 System Objective (Definition of "Done")
 
 On-water, the BAH can produce a stable stream of:
 
-PositionEstimate(tag_id, time, x,y,(z), quality)
+`PositionEstimate(tag_id, time, x, y, (z), quality)`
 
 by combining:
 
-- Anchor positions from GNSS (low-rate, global reference)
-- UWB ranges (high-rate, local relative measurement)
+- **Anchor positions from GNSS** (low-rate, global reference)
+- **UWB ranges** (high-rate, local relative measurement)
 
-This directly mirrors the concept of low-rate GNSS + high-rate UWB and keeping
-early versions simple.
+**AND** (Phase 1, start-line focus):
 
-Reference: HKSI_SRFS_presentation_20260123...
+A stable stream of **gate metrics** derived from moving buoy endpoints:
 
-3) Physical topology (Phase 1)
-------------------------------
+- Signed distance-to-line
+- Along-line progress
+- Crossing event (time, direction, confidence)
 
-Minimum topology
+This directly mirrors the concept of low-rate GNSS + high-rate UWB and keeping early versions simple.
+
+**Reference:** HKSI_SRFS_presentation_20260123...
+
+## 3. Physical Topology (Phase 1)
+
+### 3.1 Minimum Topology
 
 - 3–8 buoy anchors deployed near the start area
-- 1 is the BAH
-- Others are FAs
-- Server reachable via 4G/Wi‑Fi (uplink handled by BAH)
+- 1 is the BAH (Buoy Anchor Hub)
+- Others are FAs (Follower Anchors)
+- Server reachable via 4G/Wi-Fi (uplink handled by BAH)
 
-Sensor assumptions (Phase 1)
+### 3.2 Sensor Assumptions (Phase 1)
 
 Each anchor has:
 
-- UWB module (produces ranges)
-- GNSS module (produces anchor position)
-- IMU may physically exist (per later phases), but software ignores it in
-  Phase 1.
+- **UWB module** (produces ranges)
+- **GNSS module** (produces anchor position)
+- **IMU** may physically exist (per later phases), but software ignores it in Phase 1
 
-4) Data flow (Phase 1 only)
----------------------------
+## 4. Data Flow (Phase 1 Only)
 
-4.1 FA → BAH: UWB range reports
+### 4.1 FA → BAH: UWB Range Reports
 
 Each FA produces range observations like:
 
-"FA_i measured distance to Tag_k = r meters at time t with quality q"
+> "FA_i measured distance to Tag_k = r meters at time t with quality q"
 
 These are transmitted to the BAH over the local network.
 
-4.2 Anchor GNSS updates → BAH
+### 4.2 Anchor GNSS Updates → BAH
 
-Each anchor provides GNSS fixes (low-rate). BAH uses these to maintain anchor
-positions.
+Each anchor provides GNSS fixes (low-rate). BAH uses these to maintain anchor positions.
 
-Two workable patterns for Phase 1:
+**Two workable patterns for Phase 1:**
 
-- Pattern A (recommended): each anchor sends its GNSS fix to BAH
-- Pattern B: BAH receives GNSS for itself + other anchors from an external
-  source (less common)
+- **Pattern A (recommended):** Each anchor sends its GNSS fix to BAH
+- **Pattern B:** BAH receives GNSS for itself + other anchors from an external source (less common)
 
-BAH converts GNSS (lat/lon/alt) to a local ENU frame and uses those coordinates
-for multilateration.
+BAH converts GNSS (lat/lon/alt) to a local ENU frame and uses those coordinates for multilateration.
 
-4.3 BAH localization → BAH uplink
+#### 4.2.1 Anchor Update Policy (MUST for On-Water)
 
-BAH produces PositionEstimate and sends to server.
+BAH accepts GNSS fixes **continuously** throughout a session (not a one-time init).
 
-5) Coordinate frames (Phase 1)
-------------------------------
+Anchor positions are time-varying on water; **do not "freeze"** anchor coordinates after first receipt.
 
-Canonical frame
+If a GNSS fix is stale or low quality:
 
-Define local ENU frame:
+- Down-weight that anchor in multilateration, or exclude it temporarily
+- Surface this in `HealthStatus`
 
-- origin = BAH GNSS position at deployment start (or "session start")
-- Convert all anchor GNSS fixes to ENU:
-  - anchor_i → (E_i, N_i, U_i)
-- Compute tag position in ENU:
-  - tag_k → (E, N, U) (or 2D if you choose to operate on water surface plane)
+### 4.3 BAH Localization → BAH Uplink
 
-This is intentionally simple and matches your current code's coordinate
-conversion direction.
+BAH produces `PositionEstimate` and sends to server.
 
-6) Anchor state model (Phase 1: GNSS only)
-------------------------------------------
+## 5. Coordinate Frames (Phase 1)
+
+### 5.1 Canonical Frame
+
+Define **local ENU frame:**
+
+- **Origin** = BAH GNSS position at deployment start (or "session start")
+
+Convert all anchor GNSS fixes to ENU:
+
+- `anchor_i → (E_i, N_i, U_i)`
+
+Compute tag position in ENU:
+
+- `tag_k → (E, N, U)` (or 2D if you choose to operate on water surface plane)
+
+**Important clarification:**
+
+The ENU origin is fixed at session start, but the BAH buoy will move. Therefore, the BAH buoy's current position in ENU is generally not exactly (0,0,0). Treat BAH GNSS like any other anchor update (just with a known "session-origin").
+
+### 5.2 Time Conventions and Alignment (Phase 1)
+
+- **`t_gnss`:** GNSS fix timestamp in UTC (preferred) or GNSS time-of-week, plus a mapping to UTC
+- **`t_anchor`:** Anchor device local timestamp (optional; useful for debugging only)
+- **`t_bah`:** BAH local monotonic timestamp used as the primary compute clock
+- **`t_range`:** The timestamp used to solve a tag position. In Phase 1, define:
+  - `t_range := t_bah_rx` (BAH receive time of the RangeReport), unless a reliable common timebase is available
+
+**Goal:** When solving at `t_range`, use anchor positions predicted/interpolated to `t_range` (not simply "latest GNSS fix").
+
+**Note:** Perfect clock sync is not required in Phase 1, but a consistent definition of `t_range` is required.
+
+## 6. Anchor State Model (Phase 1: GNSS Only)
 
 Each anchor maintains:
 
-- pos_enu(t) from GNSS
-- gnss_quality: fix type, HDOP, etc.
-- timestamp
+- `pos_enu(t)` derived from GNSS
+- `gnss_quality`: fix type, HDOP, etc.
+- Timestamp of last fix
+- (Recommended) Covariance / uncertainty estimate for weighting
 
-Smoothing
+### 6.1 Smoothing / Tracking (Recommended Baseline)
 
-Because GNSS is noisy and low-rate, apply a lightweight smoother:
+Because GNSS is noisy and low-rate, apply a lightweight tracker per anchor:
 
-- exponential moving average (EMA) or small Kalman filter on anchor position
+- **Constant-velocity Kalman filter** (recommended) or EMA as minimum
 
-Buoy drift handling (Phase 1)
+Output both:
 
-Drift can be "handled" in a limited sense by continuous GNSS updates +
-smoothing.
+- Filtered state at GNSS update time
+- Predicted state at arbitrary `t_range`
 
-Full autocalibration (and drift modeling using IMU) is deferred to later phases,
-but you still get a workable baseline with GNSS alone. This is consistent with
-the staged concept of gradually increasing robustness.
+### 6.2 AnchorTracker Interface (Normative)
 
-Reference: Final SRFS Application Form_260...
+For each anchor `i`, maintain `AnchorTracker_i` in ENU:
 
-7) Localization engine (Phase 1: UWB multilateration, no IMU)
--------------------------------------------------------------
+**`update_gnss(t_gnss_utc, pos_enu, gnss_quality)`:**
 
-7.1 Inputs
+- Converts `gnss_quality` to measurement noise (R)
+- Updates filter state + covariance
 
-For each tag k over a short time window:
+**`predict(t_range)`** returns:
 
-- Anchor positions: {(E_i, N_i, U_i)}
-- Range observations: {r_i} with quality weights
+- `pos_enu_pred(t_range)`
+- `cov_pred(t_range)` (uncertainty grows with prediction horizon)
 
-7.2 Core solver (recommended)
+### 6.3 Behavior Under Missing / Stale GNSS
 
-Use N-anchor weighted least squares (WLS) multilateration:
+**If the last GNSS fix is recent** (within `T_hold`, e.g., 2–5 s):
 
-- supports 3–8 anchors
-- uses weights based on measurement quality (RSSI / reported quality flags)
+- Predict forward to `t_range`, but inflate uncertainty
 
-7.3 Robustness (still needed even without IMU)
+**If stale beyond `T_drop`** (e.g., 10–20 s):
+
+- Exclude anchor from multilateration
+
+**Always log:** `anchor_id`, `last_fix_age`, `gnss_quality`, include/exclude decision
+
+### 6.4 Buoy Drift Handling (Phase 1)
+
+Drift is handled by continuous GNSS updates + per-anchor tracking. Full autocalibration (and drift modeling using IMU) is deferred to later phases, but GNSS+tracking is a workable baseline on water.
+
+**Reference:** Final SRFS Application Form_260...
+
+## 7. Localization Engine (Phase 1: UWB Multilateration, No IMU)
+
+### 7.1 Inputs
+
+For each tag `k` over a short time window at solve time `t_range`:
+
+- **Anchor positions at `t_range`:** `{(E_i(t_range), N_i(t_range), U_i(t_range))}`
+  - Obtained from `AnchorTracker_i.predict(t_range)`
+- **Range observations:** `{r_i}` with quality weights
+- **Optional:** Anchor uncertainty from `cov_pred(t_range)` to down-weight poor anchors
+
+### 7.2 Core Solver (Recommended)
+
+Use **N-anchor weighted least squares (WLS) multilateration:**
+
+- Supports 3–8 anchors
+- Uses weights based on:
+  - UWB measurement quality (RSSI / reported quality flags)
+  - GNSS/anchor uncertainty (anchors with poor GNSS should contribute less)
+
+**Operational rule:**
+
+- Solve with N ≥ 4 by default when available (robustness)
+- Allow N=3 only as a fallback, with reduced `quality_score`
+
+### 7.3 Robustness (Still Needed Even Without IMU)
 
 Implement outlier handling because marine multipath/NLOS still exists:
 
-Range gating:
+**Range gating:**
 
-- drop negative / impossible values
-- drop beyond max operational distance
+- Drop negative / impossible values
+- Drop beyond max operational distance
 
-Residual-based rejection:
+**Residual-based rejection:**
 
-- solve once → compute residuals → drop worst residual(s) → re-solve
+- Solve once → compute residuals → drop worst residual(s) → re-solve (requires redundancy)
 
-Output a quality_score based on:
+**Output a `quality_score` based on:**
 
-- number of anchors used
-- residual statistics
-- GNSS quality of anchors
+- Number of anchors used
+- Residual statistics
+- GNSS quality / uncertainty of anchors
+- Geometry health (e.g., anchor spread / dilution heuristic)
 
-7.4 Smoothing / tracking (allowed without IMU)
+### 7.4 Smoothing / Tracking (Allowed Without IMU)
 
-Even without IMU, you should still run a simple tracker:
+Even without IMU, run a simple tracker per tag:
 
-- constant-velocity Kalman filter or α–β filter
-- helps reduce jitter
-- helps survive brief missing measurements by prediction (short duration only)
+- **Constant-velocity Kalman filter** or **α–β filter**
+- Reduces jitter
+- Survives brief missing measurements by prediction (short duration only)
 
-Important: this is not IMU fusion; it's just a kinematic smoothing layer.
+**Important:** This is not IMU fusion; it's just a kinematic smoothing layer.
 
-8) Message schemas (Phase 1 minimal set)
-----------------------------------------
+### 7.5 Gate Metrics (Moving Start Line as First-Class Output)
 
-You can keep your length-prefixed framing, but it's worth making payloads
-consistent and versioned (protobuf preferred).
+Because buoys move, the start line is time-varying.
 
-8.1 FA → BAH: RangeReport
+**Define endpoints at time `t_range`:**
 
-- schema_version
-- anchor_id
-- tag_id
-- t_anchor
-- range_m
-- quality (optional but strongly recommended)
-- seq
+- **Left endpoint:** `A_L(t_range)` (anchor id configured)
+- **Right endpoint:** `A_R(t_range)` (anchor id configured)
 
-8.2 Anchor → BAH: AnchorGnssFix
+**Compute gate metrics for each `PositionEstimate`:**
 
-- schema_version
-- anchor_id
-- t_gnss
-- lat, lon, alt
-- fix_type, hdop (or equivalent)
+- **`d_perp_signed`:** Signed perpendicular distance from tag to the line
+  - Sign convention: choose and document (e.g., negative = pre-start, positive = post-start)
+- **`s_along`:** Along-line coordinate (progress along the line segment)
+- **`crossing_detected`:** Sign change of `d_perp_signed` across time with interpolation
+- **`crossing_time_est`:** Interpolated crossing time (within the BAH timebase)
+- **`crossing_confidence`:** Based on position uncertainty + endpoint uncertainty
 
-8.3 BAH → Server: PositionEstimate
+These metrics are used for coaching and event detection and should be generated even if the server is temporarily unreachable (buffered like `PositionEstimate`).
 
-- schema_version
-- tag_id
-- t_bah
-- E, N, U (or E, N)
-- quality_score
-- anchors_used[]
-- residual_stats
+## 8. Message Schemas (Phase 1 Minimal Set)
 
-8.4 BAH → Server: HealthStatus
+You can keep your length-prefixed framing, but it's worth making payloads consistent and versioned (protobuf preferred).
+
+### 8.1 FA → BAH: RangeReport
+
+- `schema_version`
+- `anchor_id`
+- `tag_id`
+- `t_bah_rx` (required; BAH receive time, used for `t_range` in Phase 1)
+- `t_anchor_tx` (optional; anchor local time, debugging only)
+- `range_m`
+- `quality` (optional but strongly recommended)
+- `seq`
+
+### 8.2 Anchor → BAH: AnchorGnssFix
+
+- `schema_version`
+- `anchor_id`
+- `t_gnss_utc` (required if available; otherwise provide best-effort UTC mapping)
+- `lat`, `lon`, `alt`
+- `fix_type`, `hdop` (or equivalent)
+- `t_bah_rx` (optional; time BAH received this GNSS message, for diagnostics)
+
+### 8.3 BAH → Server: PositionEstimate
+
+- `schema_version`
+- `tag_id`
+- `t_bah` (solve time; equals `t_range`)
+- `E`, `N`, `U` (or `E`, `N`)
+- `quality_score`
+- `anchors_used[]`
+- `residual_stats`
+- (Optional) `position_cov` or uncertainty scalar
+
+### 8.4 BAH → Server: GateMetrics (Recommended)
+
+- `schema_version`
+- `tag_id`
+- `t_bah`
+- `gate_left_anchor_id`, `gate_right_anchor_id`
+- `d_perp_signed`
+- `s_along`
+- (Optional) `crossing_detected`, `crossing_time_est`, `crossing_confidence`
+
+### 8.5 BAH → Server: HealthStatus
 
 - BAH CPU temp, uptime
-- uplink status
+- Uplink status
 - FA packet loss estimates
 - GNSS fix quality summary (anchors)
+- Anchor staleness summary (`last_fix_age` per anchor)
 
-9) Failure modes and required behavior (Phase 1)
-------------------------------------------------
+## 9. Failure Modes and Required Behavior (Phase 1)
 
-9.1 If fewer than 3 anchors available for a tag
+### 9.1 If Fewer Than 3 Anchors Available for a Tag
 
 - Do not output a "fake" position
-- Output "no-fix" state with reason, or hold last valid position with degraded
-  confidence (your choice, but document it)
+- Output "no-fix" state with reason, or hold last valid position with degraded confidence (your choice, but document it)
 
-9.2 GNSS poor quality on one anchor
+### 9.2 GNSS Poor Quality or Stale on One Anchor
 
 - Reduce its weight (or temporarily exclude it)
-- Report anchor GNSS quality in HealthStatus
+- Report anchor GNSS quality + staleness in `HealthStatus`
+- Ensure `AnchorTracker` uncertainty grows with time since last fix
 
-9.3 UWB outlier burst
+### 9.3 UWB Outlier Burst
 
-- Robust rejection should drop bad ranges
-- If instability persists: output low confidence and/or pause estimates rather
-  than jumping
+- Robust rejection should drop bad ranges (needs redundancy)
+- If instability persists: output low confidence and/or pause estimates rather than jumping
 
-9.4 Uplink lost
+### 9.4 Uplink Lost
 
 - Continue computing locally
-- Buffer last N seconds/minutes of PositionEstimate for later upload (bounded)
-
-Revised Phase 1 Development Plan (GNSS + UWB only)
---------------------------------------------------
-
-This is the concrete build order I'd recommend.
-
-Milestone P1-A — "GNSS anchor state working"
-
-Deliverables
-
-- Ingest AnchorGnssFix for each anchor
-- Convert GNSS → ENU
-- Apply smoothing
-- Produce an internal "anchor state table" with quality flags
-
-Acceptance
-
-- Anchor ENU positions update continuously
-- A bad GNSS fix visibly lowers anchor confidence (logged + surfaced)
-
-Milestone P1-B — "Multi-anchor UWB multilateration"
-
-Deliverables
-
-- Ingest RangeReport from multiple FAs
-- Group by tag_id + time window
-- Solve using WLS multilateration with N≥3
-
-Acceptance
-
-- Stable position for simulated tags in a lab geometry
-- Uses >3 anchors when available (no forced [:3] truncation)
-
-Milestone P1-C — "Robustness without IMU"
-
-Deliverables
-
-- Outlier rejection loop (residual-based)
-- Quality score output
-- Simple kinematic filter (no IMU)
-
-Acceptance
-
-- Injected range outliers do not cause large jumps
-- Output confidence drops gracefully instead of producing nonsense
-
-Milestone P1-D — "BAH uplink to server"
-
-Deliverables
-
-- Send PositionEstimate + HealthStatus to server endpoint
-- Retry and buffering for uplink dropouts
-
-Acceptance
-
-- Server receives a clean real-time stream
-- System continues operating through temporary uplink failures
+- Buffer last N seconds/minutes of `PositionEstimate` + `GateMetrics` for later upload (bounded)
